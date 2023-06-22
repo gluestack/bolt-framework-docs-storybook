@@ -13,10 +13,9 @@ export const parameters = {
     storySort: {
       method: '',
       order: [
-        'Overview',
-        ['Introduction', 'Performance', 'API'],
         'Getting Started',
         [
+          'Introduction',
           'Installation',
           'Install in Expo',
           'Install in Next.js',
