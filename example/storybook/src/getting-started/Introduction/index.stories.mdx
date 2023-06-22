@@ -7,6 +7,13 @@ import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 <Meta title="Getting Started/Introduction" />
 
+import {
+  Hoverable,
+  Button,
+  AppProvider,
+  HStack,
+} from '@gluestack/design-system';
+
 # Introduction
 
 Seal Framework is a powerful CLI (Command Line Interface) tool designed to simplify the management and deployment of projects and services. It provides a comprehensive set of commands and options to streamline various aspects of the development lifecycle, from project initialization to service deployment and monitoring.
@@ -22,3 +29,23 @@ When it comes to deployment, Seal Framework offers a straightforward approach. I
 Furthermore, Seal Framework includes commands for monitoring and inspecting services. Developers can retrieve logs for specific services using the `log` command or get a comprehensive overview of service activity using the `exec` command. These features assist in troubleshooting, debugging, and monitoring the behavior of individual services within the project.
 
 Overall, Seal Framework is a versatile CLI tool that simplifies the management, deployment, and monitoring of projects and services. By providing a unified interface and a rich set of commands, it enables developers to focus on building and delivering their applications while abstracting away the complexities of service orchestration and deployment.
+
+<AppProvider>
+  <HStack
+    space="md"
+    flex={1}
+    mb="$4"
+    sx={{
+      '@lg': {
+        flexDirection: 'row',
+      },
+      'flexDirection': 'column',
+    }}
+  >
+    <Hoverable
+      heading="Installation"
+      subHeading="Guide to install Seal Framework"
+      href="/docs/getting-started/installation"
+    />
+  </HStack>
+</AppProvider>
