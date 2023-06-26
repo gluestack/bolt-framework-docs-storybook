@@ -1,6 +1,6 @@
 ---
-title: Introduction | seal-framework
-description: Seal Framework is a powerful CLI tool for streamlined management and deployment of projects and services.
+title: Introduction | bolt-framework
+description: Bolt Framework is a powerful CLI tool for streamlined management and deployment of projects and services.
 ---
 
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
@@ -16,19 +16,22 @@ import {
 
 # Introduction
 
-Seal Framework is a powerful CLI (Command Line Interface) tool designed to simplify the management and deployment of projects and services. It provides a comprehensive set of commands and options to streamline various aspects of the development lifecycle, from project initialization to service deployment and monitoring.
+**Development & Deployment without the pain!**
 
-With Seal Framework, developers can easily configure and manage services through a centralized configuration file called `seal.yaml`. This file allows defining the services required for a project, specifying their dependencies, and configuring various settings such as ports, volumes, and environment variables. The framework provides commands to add, start, stop, and list services, making it effortless to orchestrate and maintain complex service architectures.
+Bolt is a powerful CLI (Command Line Interface) tool designed to simplify the management and deployment of projects and services. It provides a comprehensive set of commands and options to streamline various aspects of the development lifecycle, from project initialisation to service deployment and monitoring.
 
-In addition to service management, Seal Framework offers features for handling routing and ingress configuration. It includes commands to generate an Nginx configuration file (`seal.nginx.conf`) based on the `seal.yaml` ingress configuration. This feature simplifies the setup of routing rules and enables developers to easily manage incoming traffic and define routes for different services within their projects.
+With Bolt, developers can easily configure and manage services through a centralised configuration file called `bolt.yaml`. This file allows defining the services required for a project, specifying their dependencies, and configuring various settings such as ports, volumes, and environment variables. The framework provides commands to add, start, stop, and list services, making it effortless to orchestrate and maintain complex service architectures.
 
-Seal Framework also provides functionalities for generating environment files. By leveraging a template file (`.env.tpl`), developers can generate `.env` files for all services, automatically populating them with the necessary environment variables. This streamlines the process of configuring environment-specific settings and ensures consistency across different environments.
+In addition to service management, Bolt offers features for handling routing and ingress configuration. It includes commands to generate an Nginx configuration file (bolt.nginx.conf) based on the bolt.yaml ingress configuration. This feature simplifies the setup of routing rules and enables developers to easily manage incoming traffic and define routes for different services within their projects.
 
-When it comes to deployment, Seal Framework offers a straightforward approach. It allows developers to prepare the project by compressing the required files and dependencies. The framework includes deployment commands that initiate the deployment process, making it easier to package and distribute the project to various hosting platforms or deployment targets.
+Bolt also provides functionalities for generating environment files. By leveraging a template file (.env.tpl), developers can generate .env files for all services, automatically populating them with the necessary environment variables. This streamlines the process of configuring environment-specific settings and ensures consistency across different environments.
 
-Furthermore, Seal Framework includes commands for monitoring and inspecting services. Developers can retrieve logs for specific services using the `log` command or get a comprehensive overview of service activity using the `exec` command. These features assist in troubleshooting, debugging, and monitoring the behavior of individual services within the project.
+When it comes to deployment, Bolt offers a straightforward approach. It allows developers to prepare the project by compressing the required files and dependencies. The framework includes deployment commands that initiate the deployment process, making it easier to package and distribute the project to various hosting platforms or deployment targets.
 
-Overall, Seal Framework is a versatile CLI tool that simplifies the management, deployment, and monitoring of projects and services. By providing a unified interface and a rich set of commands, it enables developers to focus on building and delivering their applications while abstracting away the complexities of service orchestration and deployment.
+Furthermore, Bolt includes commands for monitoring and inspecting services. Developers can retrieve logs for specific services using the log command or get a comprehensive overview of service activity using the `exec` command. These features assist in troubleshooting, debugging, and monitoring the behaviour of individual services within the project.
+
+Overall, Bolt is a versatile CLI tool that simplifies the management, deployment, and monitoring of projects and their services. By providing a unified interface and a rich set of commands, it enables developers to focus on building and delivering their applications while abstracting away the complexities of service orchestration and deployment.
+
 
 <AppProvider>
   <HStack
@@ -44,7 +47,7 @@ Overall, Seal Framework is a versatile CLI tool that simplifies the management, 
   >
     <Hoverable
       heading="Installation"
-      subHeading="Guide to install Seal Framework"
+      subHeading="Guide to install Bolt Framework"
       href="/docs/getting-started/installation"
     />
   </HStack>

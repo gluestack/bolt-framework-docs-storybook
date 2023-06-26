@@ -1,0 +1,44 @@
+
+
+---
+title: Defining a Bolt Project | bolt-framework
+description: Bolt Framework is a powerful CLI tool for streamlined management and deployment of projects and services.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Box, AppProvider } from '@gluestack/design-system';
+
+<Meta title="Getting Started/Defining a Bolt Project" />
+
+# Defining a Bolt Project
+
+Bolt CLI manages your projects and its services using two types of yaml files. One is of them is **bolt.yaml**. Here’s how **bolt.yaml** work and manages processes for you.
+
+## bolt.yaml
+
+This file contains your project information, envfile’s path, default service runner for your project, bolt services list, ingress routing to your bolt services & project runner server’s configuration.
+You can generate this file using init & service:add commands. Below’s the base template for **bolt.yaml** file.
+
+```yaml
+envfile: <path/to/envfile>
+project_id: "<Project ID>"
+project_name: <Project Name>
+default_project_runner: <host | vm>
+default_service_runner: <local | docker>
+services: {}
+ingress: null
+```
+
+Here’s how **bolt.yaml** file would look after running the init command —
+
+```yaml
+envfile: .env.tpl
+project_id: "1687504622045"
+project_name: mynextapp
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```
+
+
