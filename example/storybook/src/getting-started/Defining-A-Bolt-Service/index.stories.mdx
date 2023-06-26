@@ -1,0 +1,50 @@
+
+
+---
+title: Defining a Bolt Service | bolt-framework
+description: Bolt Framework is a powerful CLI tool for streamlined management and deployment of projects and services.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Box, AppProvider } from '@gluestack/design-system';
+
+<Meta title="Getting Started/Defining a Bolt Service" />
+
+# Defining a Bolt Service
+
+Bolt CLI manages your projects and its services using two types of yaml files. One of them is **bolt.service.yaml**. Here’s how **bolt.service.yaml** work and manages processes for you.
+
+## bolt.service.yaml
+
+This file contains your service’s information like container name, service-runners platform it can run on. And each service-runner object contains envfile path and build command.
+Here’s how a sample bolt service file looks like —
+
+```yaml
+container_name: <your container name>
+stateless: <true | false>
+service-runners:
+  local:
+    envfile: <path/to/envfile>
+    build: <your project's run command>
+  docker:
+    envfile: <path/to/envfile>
+    build: <path/to/your/Dockerfile>
+    ports:
+      - <your host machine's port>:<your project's running port in docker>
+```
+
+Here’s how **bolt.service.yaml** file would look after running the service:add command —
+
+```yaml
+container_name: myapp
+stateless: true
+service-runners:
+  local:
+    envfile: .env
+    build: npm install && npm start
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 3000:3000
+```
