@@ -1,0 +1,242 @@
+---
+title: Adding Bolt to an Existing Project | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Getting Started/Adding Bolt to an Existing Project" />
+
+# Adding Bolt to an Existing Project
+
+## Table of Contents
+
+- <a href="#adding-bolt-to-a-project">Adding Bolt to a project</a>
+
+- <a href="#adding-a-project-service-as-bolt-service">Adding a Project Service as Bolt Service</a>
+
+- <a href="#running-project-via-bolt">Running Project via Bolt</a>
+
+- <a href="#listing-services-from-project">Listing Services From Project</a>
+
+- <a href="#monitoring-service-logs">Monitoring Service Logs</a>
+
+- <a href="#stopping-project-via-bolt">Stopping Project via bolt</a>
+
+
+## Adding Bolt to a Project
+
+Go inside the project which you want to run via bolt, run `bolt init` command to create `bolt.yaml` file inside your project.
+
+```bash
+$ cd PATH_TO_YOUR_PROJECT
+$ bolt init
+```
+
+This will create a `bolt.yaml` file in your project's root directory.
+
+```yaml
+envfile: .env.tpl
+project_id: '1687780932260'
+project_name: YOUR_PROJECT_NAME
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```
+
+Let's take the below project example,
+
+```bash
+# Below's the directory structure of our project.
+bolt-project/
+╰─➤ service-one/
+  ╰─➤ index.js
+  ╰─➤ package.json
+╰─➤ service-two/
+  ╰─➤ index.js
+  ╰─➤ package.json
+```
+
+Now if I do `bolt init` inside `bolt-project` directory, it will create a `bolt.yaml` file at root of the project which is something like this:
+
+```yaml
+envfile: .env.tpl
+project_id: '1687780932260'
+project_name: bolt-project
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```
+
+## Adding a Project Service as Bolt Service
+
+In order to add a service to your project, you can use the `bolt service:add` command. This command will create a `bolt.service.yaml` file inside your service directory and will include the same in your `bolt.yaml` file.
+
+```bash
+$ bolt service:add SERVICE_INSTANCE_NAME SERVICE_PATH
+```
+
+Now, let's add service-one and service-two with its instance name as servicetwo and servicetwo respectively to the `bolt.yaml` file by running the following commands:
+
+```bash
+$ bolt service:add serviceone service-one/
+Creating app in service-one
+Scanning source code
+Detected Node.js app
+Installed serviceone service in service-one
+Verifying metadata for other services..
+Metadata verified
+```
+
+```bash
+$ bolt service:add servicetwo service-two/
+Creating app in service-one
+Scanning source code
+Detected Node.js app
+Installed serviceone service in service-one
+Verifying metadata for other services..
+Metadata verified
+```
+
+Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
+
+```yaml
+# This is how your bolt.yaml file looks
+envfile: .env.tpl
+project_id: '1687780932260'
+project_name: boltproject
+default_project_runner: host
+default_service_runner: local
+services:
+  serviceone:
+    path: service-one/
+  servicetwo:
+    path: service-two/
+ingress: null
+```
+
+```yaml
+# This is how your service-one/bolt.service.yaml looks
+container_name: serviceone
+stateless: true
+service_runners:
+  local:
+    envfile: .env
+    build: npm install && node app.js
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 9000:9000
+    volumes:
+      - service-one:/app
+      - /app/node_modules
+```
+
+```yaml
+# This is how your service-two/bolt.service.yaml looks
+container_name: servicetwo
+stateless: true
+service_runners:
+  local:
+    envfile: .env
+    build: npm install && node app.js
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 9000:9000
+    volumes:
+      - service-one:/app
+      - /app/node_modules
+```
+
+**Note:**  Configure these files as per your need.
+
+
+## Running Project via Bolt
+
+In order to run the project using bolt you need to run the following command:
+
+```bash
+$ bolt up
+```
+
+Now, if we run services shown in example above using Bolt.
+
+```bash
+$ bolt up
+>> Creating Ingress bolt-project...
+>> No ingress found in config. Skipping route generation...
+$ bolt env:generate
+$ bolt env:generate
+$ bolt env:generate
+$ sh -c 'npm install && npm run dev'
+$ sh -c 'npm install && npm run dev'
+
+"serviceone" service is up on local platform
+
+
+"servicetwo" service is up on local platform
+```
+
+You can now access these services at the port mentioned in their logic.
+
+## Listing Services From Project
+
+You can also the list of services in your bolt project and their statuses using the `service:list` command.
+
+```bash
+$ bolt service:list
+```
+
+If we run the above command for our example project, we will get the following output something like this:
+
+```bash
+$ bolt service:list
+╔═══╤══════════════╤════════╤════════════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name │ Status │ Project Runner │ Service Runner │ Port │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 1 │ serviceone   │ up     │ host           │ local          │ NA   │ 6220      ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 2 │ servicetwo   │ up     │ host           │ local          │ NA   │ 6221      ║
+╚═══╧══════════════╧════════╧════════════════╧════════════════╧══════╧═══════════╝
+```
+
+## Monitoring Service Logs
+
+To monitor logs, use the following command:
+
+```bash
+$ bolt log SERVICE_NAME
+```
+
+To keep monitoring logs in live mode, use the following command:
+
+```bash
+$ bolt log --follow SERVICE_NAME
+```
+
+## Stopping Project via bolt
+
+To stop your project, you can run the following command:
+
+```bash
+$ bolt down
+```
+
+If we run the above command for our example project, we will get the following output something like this:
+
+```bash
+$ bolt down
+>> Stopping bolt-project...
+
+"servicetwo" is down from local platform
+
+
+"serviceone" is down from local platform
+
+>> bolt-project is down.
+```
