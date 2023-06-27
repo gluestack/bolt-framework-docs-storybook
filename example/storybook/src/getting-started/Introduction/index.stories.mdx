@@ -1,54 +1,30 @@
 ---
 title: Introduction | bolt-framework
-description: Bolt Framework is a powerful CLI tool for streamlined management and deployment of projects and services.
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
 ---
 
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 <Meta title="Getting Started/Introduction" />
 
-import {
-  Hoverable,
-  Button,
-  AppProvider,
-  HStack,
-} from '@gluestack/design-system';
+# Bolt: The Universal Project Runner
 
-# Introduction
+Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
 
-**Development without the pain!**
+Bolt is a universal project runner. Bolt is designed to run child processes, Docker containers and can even encapsulate your entire project within a VM, all under a single unified API. Whether your environment is local, Docker-based, or a VM, Bolt provides a seamless, cohesive experience. Shift your focus to creating and let Bolt handle the complexities of setting up the development environment.
 
-Bolt is a powerful CLI (Command Line Interface) tool designed to simplify the management and deployment of projects and services. It provides a comprehensive set of commands and options to streamline various aspects of the development lifecycle, from project initialisation to service deployment and monitoring.
+## Why Bolt?
 
-With Bolt, developers can easily configure and manage services through a centralised configuration file called `bolt.yaml`. This file allows defining the services required for a project, specifying their dependencies, and configuring various settings such as ports, volumes, and environment variables. The framework provides commands to add, start, stop, and list services, making it effortless to orchestrate and maintain complex service architectures.
+Running projects locally requires running system services and using system resources. For eg: A project may need to run a Postgres instance, an iOS simulator and a Node watcher & bundler. It can get cumbersome when you set up everything manually because you may need a Docker instance for the Postgres, a child process on the host machine to boot the iOS simulator and another child process for the Node packager. The Node packager can also run as a Docker instance. And when you run all these, the host machine may slow down and you may have to move things inside a VM. Bolt solves all those problems with a unified API for managing services (boot, kill, restart, fetch logs).
 
-In addition to service management, Bolt offers features for handling routing and ingress configuration. It includes commands to generate an Nginx configuration file (bolt.nginx.conf) based on the bolt.yaml ingress configuration. This feature simplifies the setup of routing rules and enables developers to easily manage incoming traffic and define routes for different services within their projects.
-
-Bolt also provides functionalities for generating environment files. By leveraging a template file (.env.tpl), developers can generate .env files for all services, automatically populating them with the necessary environment variables. This streamlines the process of configuring environment-specific settings and ensures consistency across different environments.
-
-When it comes to deployment, Bolt offers a straightforward approach. It allows developers to prepare the project by compressing the required files and dependencies. The framework includes deployment commands that initiate the deployment process, making it easier to package and distribute the project to various hosting platforms or deployment targets.
-
-Furthermore, Bolt includes commands for monitoring and inspecting services. Developers can retrieve logs for specific services using the log command or get a comprehensive overview of service activity using the `exec` command. These features assist in troubleshooting, debugging, and monitoring the behaviour of individual services within the project.
-
-Overall, Bolt is a versatile CLI tool that simplifies the management, deployment, and monitoring of projects and their services. By providing a unified interface and a rich set of commands, it enables developers to focus on building and delivering their applications while abstracting away the complexities of service orchestration and deployment.
-
+Here's a small diagram explaining Bolt's Architecture:
 
 <AppProvider>
-  <HStack
-    space="md"
-    flex={1}
-    mb="$4"
-    sx={{
-      '@lg': {
-        flexDirection: 'row',
-      },
-      'flexDirection': 'column',
-    }}
-  >
-    <Hoverable
-      heading="Installation"
-      subHeading="Guide to install Bolt Framework"
-      href="/docs/getting-started/installation"
+  <Box>
+    <img
+      src="/assets/BoltArchitecture.png"
+      width="80%"
+      alt="Bolt Architecture"
     />
-  </HStack>
+  </Box>
 </AppProvider>

@@ -1,0 +1,24 @@
+---
+title: route:list | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="API Reference/CLI Reference/route:list" />
+
+# route:list
+
+This command helps you in printing the logs against a bolt project’s service. You can also keep monitoring live logs using --follow option.
+
+To review bolt virtual machine’s system log, you can use --vm option.
+
+```bash
+$ bolt route:list --help
+Usage: bolt route:list [options]
+
+List routes generated using "bolt.yaml" file's ingress object
+
+Options:
+  -h, --help  display help for command
+```

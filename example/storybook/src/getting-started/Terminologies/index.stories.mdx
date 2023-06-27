@@ -1,0 +1,56 @@
+---
+title: Terminologies | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Box, AppProvider } from '@gluestack/design-system';
+
+<Meta title="Getting Started/Terminologies" />
+
+# Terminologies
+
+## Table of Contents
+
+- [Bolt CLI](#bolt-cli)
+- [Bolt Project](#bolt-project)
+- [Bolt Project Runner](#bolt-project-runner)
+  - [Bolt Project Runner Options](#bolt-project-runner-options)
+- [Bolt Service](#bolt-service)
+- [Bolt Service Runner](#bolt-service-runner)
+  - [Bolt Service Runner Options](#bolt-service-runner-options)
+
+## Bolt CLI
+
+Bolt CLI is a command-line interface tool that provides a comprehensive set of commands, arguments, and options for efficient management, execution, monitoring, and deployment of services and projects. It offers a convenient way to interact with Bolt and perform various operations.
+
+## Bolt Project
+
+A Bolt Project represents a fully functional application capable of running on any system. It encompasses a wide range of possibilities, including applications developed using popular frameworks and technologies such as NextJS, ReactJS, NodeJS, Laravel PHP, or Golang.
+Additionally, it can also encompass a monorepo containing multiple microservices, providing a flexible and scalable architecture for complex projects.
+
+## Bolt Project Runner
+
+Bolt Project Runner is a powerful utility designed to facilitate the management of multiple projects. It enables the execution of projects either on the host machine or within a virtual machine environment.
+
+The host machine refers to the user's local computer or server, while the virtual machine is an internal virtualisation platform implemented using Alpine Linux v3.18.
+
+### Bolt Project Runner Options
+
+- Host
+- VM
+
+## Bolt Service
+
+A Bolt Service refers to a self-contained and fully functional application or microservice. Within a Bolt Project, multiple services can be included, each serving a specific purpose or functionality.
+
+## Bolt Service Runner
+
+Bolt Service Runner is a component within the Bolt framework that facilitates the management of various services defined within a Bolt Project.
+
+Service Runner enables users to run their projects either locally on their system or within a Docker environment. This runner provides a seamless execution environment for services, allowing for efficient development, testing, and deployment of applications and microservices.
+
+### Bolt Service Runner Options
+
+- Local
+- Docker

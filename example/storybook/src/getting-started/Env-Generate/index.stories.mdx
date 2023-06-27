@@ -1,12 +1,11 @@
 ---
 title: ENV Management | bolt-framework
-description: Bolt Framework is a powerful CLI tool for streamlined management and deployment of projects and services.
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
 ---
 
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 <Meta title="Getting Started/ENV Management" />
-
 
 # ENV Management
 
@@ -58,18 +57,21 @@ To illustrate the usage of the `env:generate` command and variable referencing, 
 Assume the following variables are defined in the respective `.env.tpl` files:
 
 **project-a/.env.tpl:**
+
 ```
 PROJECT_NAME="My Project"
 LOG_LEVEL=debug
 ```
 
 **project-a/service-a/.env.tpl:**
+
 ```
 SERVICEA_HOST=localhost
 SERVICEA_PORT=8080
 ```
 
 **project-a/service-b/.env.tpl:**
+
 ```
 SERVICEB_API_KEY=12345
 SERVICEB_BASE_URL=https://api.example.com
@@ -78,18 +80,21 @@ SERVICEB_BASE_URL=https://api.example.com
 When executing the `env:generate` command, the following files will be generated:
 
 **project-a/.env:**
+
 ```
 PROJECT_NAME="My Project"
 LOG_LEVEL=debug
 ```
 
 **project-a/service-a/.env:**
+
 ```
 SERVICEA_HOST=localhost
 SERVICEA_PORT=8080
 ```
 
 **project-a/service-b/.env:**
+
 ```
 SERVICEB_API_KEY=12345
 SERVICEB_BASE_URL=https://api.example.com

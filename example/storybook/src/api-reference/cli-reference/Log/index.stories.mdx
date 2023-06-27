@@ -1,0 +1,29 @@
+---
+title: log | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="API Reference/CLI Reference/log" />
+
+# log
+
+This command helps you in printing the logs against a bolt project’s service. You can also keep monitoring live logs using --follow option.
+
+To review bolt virtual machine’s system log, you can use --vm option.
+
+```bash
+$ bolt log --help
+Usage: bolt log [options] <service-name>
+
+Gives you the log of a service
+
+Arguments:
+  service-name  name of the service
+
+Options:
+  -f, --follow  follow logs
+  --vm          show logs of vm
+  -h, --help    display help for command
+```

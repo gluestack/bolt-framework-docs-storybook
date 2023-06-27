@@ -1,0 +1,40 @@
+---
+title: bolt.yaml | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+import { Box, AppProvider } from '@gluestack/design-system';
+
+<Meta title="API Reference/bolt.yaml" />
+
+# Defining Bolt file
+
+Bolt CLI manages your projects and its services using two types of yaml files. One is of them is **bolt.yaml**. Here’s how **bolt.yaml** work and manages processes for you.
+
+## bolt.yaml
+
+This file contains your project information, envfile’s path, default service runner for your project, bolt services list, ingress routing to your bolt services & project runner server’s configuration.
+You can generate this file using init & service:add commands. Below’s the base template for **bolt.yaml** file.
+
+```yaml
+envfile: <path/to/envfile>
+project_id: '<Project ID>'
+project_name: <Project Name>
+default_project_runner: <host | vm>
+default_service_runner: <local | docker>
+services: {}
+ingress: null
+```
+
+Here's how **bolt.yaml** file would look after running the init command —
+
+```yaml
+envfile: .env.tpl
+project_id: '1687504622045'
+project_name: mynextapp
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```

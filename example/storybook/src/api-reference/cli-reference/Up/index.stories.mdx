@@ -1,0 +1,29 @@
+---
+title: up | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="API Reference/CLI Reference/up" />
+
+# up
+
+This command runs your project and its services with the given options.
+
+- **--host** option runs the project in your host machine
+- **--vm** option runs the project in bolt virtual machine
+- **--cache** option reuses the previously built container, this command will persist the changes as it was in your previous session. By default Bolt VM always creates your project’s into a fresh container.
+
+```bash
+$ bolt up --help
+Usage: bolt up [options]
+
+Starts all the services mentioned in "bolt.yaml" file
+
+Options:
+  --host      Runs the project on host
+  --vm        Runs the project on sealvm
+  --cache     Reuses the previously built container
+  -h, --help  display help for command
+```
