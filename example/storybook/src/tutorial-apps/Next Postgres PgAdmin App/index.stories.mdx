@@ -1,0 +1,315 @@
+---
+title: Next Postgres PgAdmin | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Box, AppProvider, Link } from '@gluestack/design-system';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+
+<Meta title="Tutorials/Next Postgres PgAdmin" />
+
+# Tutorial: Next Postgres PgAdmin
+This tutorial is about how to run a Next.js Postgress and PgAdmin in a project using bolt.
+
+
+## Table of Contents
+
+- Objectives
+- Project Structure
+- Initializing the project using Bolt
+- Adding all the services as Bolt service
+- Adding Ingress
+- Running the Project
+- Running the Project on Docker
+- Running the Project on Local
+- Listing Bolt Services
+- Monitoring Service Logs
+- Stopping Your Project
+- Repo Link
+
+## Objectives
+
+Here we have created a project where we have three folder named `todo-next`, `postgres` and `pgadmin` which has a next app with postgres and pgadmin as services.
+
+Our Main objectives are:
+
+- Run this project using bolt in local machine.
+
+- Run this project using bolt in docker.
+
+## Project Structure
+
+```bash
+# Below's the directory structure of our project.
+next-postgres-pgadmin/
+╰─➤ pgadmin/...
+╰─➤ postgres/...
+╰─➤ todo-next/...
+╰─➤ .env
+╰─➤ .env.tpl
+╰─➤ bolt.nginx.conf
+╰─➤ bolt.yaml
+╰─➤ Readme.md
+```
+
+## Initializing the project using Bolt
+
+At first we have initialized the project by running `bolt init` command to create `bolt.yaml` file.
+
+```bash
+$ cd next-postgres-pgadmin
+$ bolt init
+```
+
+It has created a `bolt.yaml` file in our project's root directory.
+
+```yaml
+envfile: .env.tpl
+project_id: "1687779995699"
+project_name: next-postgres-pgadmin
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```
+
+## Adding all the services as Bolt service
+
+Now in order to add each and every services we have executed the following commands:
+
+```bash
+$ bolt service:add todonext todo-next
+Creating app in todo-next
+Scanning source code
+Detected NextJS app
+Installed todonext service in todo-next
+Verifying metadata for other services..
+Metadata verified
+```
+
+```bash
+$ bolt service:add postgres postgres
+Creating app in postgres
+Scanning source code
+Detected Postgres app
+Installed postgres service in postgres
+Verifying metadata for other services..
+Metadata verified
+```
+
+```bash
+$ bolt service:add pgadmin pgadmin
+Creating app in pgadmin
+Scanning source code
+Detected an Unknown app
+Manually edit "bolt.service.yaml", "run.Dockerfile", "build.Dockerfile"
+Installed pgadmin service in pgadmin
+Verifying metadata for other services..
+Metadata verified
+```
+
+Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
+
+```yaml
+# This is how bolt.yaml file looks after executing the above commands
+envfile: .env.tpl
+project_id: "1687779995699"
+project_name: next-postgres-pgadmin
+default_project_runner: host
+default_service_runner: local
+services:
+  todonext:
+    path: todo-next
+  postgres:
+    path: postgres
+  pgadmin:
+    path: pgadmin
+ingress: null
+```
+
+Each services has their own `bolt.service.yaml` file, here we have configured it as per our requirement.
+
+Also we have configured `run.dockerfile` and `build.dockerfile` for pgadmin and postgres to run them in docker.
+
+## Adding Ingress
+
+We have added ingress configuration for our project inside bolt.yaml file to access our services from outside.
+
+```yaml
+# This is how bolt.yaml file looks finally after adding ingress configuration
+envfile: .env.tpl
+project_id: "1687779995699"
+project_name: next-postgres-pgadmin
+default_project_runner: host
+default_service_runner: local
+services:
+  todonext:
+    path: todo-next
+  postgres:
+    path: postgres
+  pgadmin:
+    path: pgadmin
+ingress:
+  - domain: nextjs.local.gluestack.io
+    port: 8000
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://host.docker.internal:3000
+  - domain: admin.local.gluestack.io
+    port: 8001
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://host.docker.internal:8080
+```
+
+
+
+
+## Running the Project
+
+Now, let's run our services using Bolt.
+
+```bash
+# The following command will run the service as per the configuration in bolt.yaml file
+$ bolt up
+```
+
+Now this command will first run the services as per their configurations inside `bolt.service.yaml` for each each serivce. After that this will create a nginx configuration file `bolt.nginx.conf` and run the nginx server with the help of this configuration file.
+
+Here `bolt.nginx.conf` file is created from configuration provided in `ingress` in `bolt.yaml` file.
+
+## Running the Project on Docker
+
+Inorder to run the services in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `docker`.
+
+```yaml
+# This is how bolt.yaml file should look like if you want to run the service in docker
+envfile: .env.tpl
+project_id: "1687779995699"
+project_name: next-postgres-pgadmin
+default_project_runner: host
+default_service_runner: docker
+services:
+  todonext:
+    path: todo-next
+  postgres:
+    path: postgres
+  pgadmin:
+    path: pgadmin
+ingress:
+  - domain: nextjs.local.gluestack.io
+    port: 8000
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://host.docker.internal:3000
+  - domain: admin.local.gluestack.io
+    port: 8001
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://host.docker.internal:8080
+```
+
+Now if you run `bolt up` command it will run the services in docker.
+
+## Running the Project on Local
+
+Inorder to run the services in local when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `local`.
+
+```yaml
+# This is how bolt.yaml file should look like if you want to run the service in local
+envfile: .env.tpl
+project_id: "1687779995699"
+project_name: next-postgres-pgadmin
+default_project_runner: host
+default_service_runner: local
+services:
+  todonext:
+    path: todo-next
+  postgres:
+    path: postgres
+  pgadmin:
+    path: pgadmin
+ingress:
+  - domain: nextjs.local.gluestack.io
+    port: 8000
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://host.docker.internal:3000
+  - domain: admin.local.gluestack.io
+    port: 8001
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://host.docker.internal:8080
+```
+
+Now if you run `bolt up` command it will run the services in local.
+
+> **Note:** For services postgres and pgadmin we don't have added any local runner configuration so it will run in docker only, even when your `default_service_runner` is local.
+
+## Listing Bolt Services
+
+You can also see the list of services in this project and their statuses using the `service:list` command.
+
+```bash
+$ bolt service:list
+╔═══╤══════════════╤════════╤════════════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name │ Status │ Project Runner │ Service Runner │ Port │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 1 │ todonext     │ up     │ host           │ local          │ NA   │ 27389     ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 2 │ postgres     │ up     │ host           │ docker         │ 5432 │ postgres  ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 3 │ pgadmin      │ up     │ host           │ docker         │ 8080 │ pgadmin   ║
+╚═══╧══════════════╧════════╧════════════════╧════════════════╧══════╧═══════════╝
+```
+
+## Monitoring Service Logs
+
+To monitor logs, use the following command:
+
+```bash
+$ bolt log SERVICE_NAME
+```
+
+To keep monitoring logs in live mode, use the following command:
+
+```bash
+$ bolt log --follow SERVICE_NAME
+```
+
+For example, if you want to monitor logs of `todonext` service, you can use the following command:
+
+```bash
+# To monitor logs at once
+$ bolt log todonext
+
+# To keep monitoring logs in live mode
+$ bolt log --follow todonext
+```
+
+## Stopping Your Project
+
+To stop your project, you can run the following command:
+
+```bash
+$ bolt down
+```
+
+This command will terminate all the services running via bolt in the project.
+
+## Repo Link
+
+To clone the project you can use [bolt-framework-tutorial-apps/examples/next-postgres-pgadmin](https://github.com/gluestack/bolt-framework-tutorial-apps/tree/main/examples/next-postgres-pgadmin)
