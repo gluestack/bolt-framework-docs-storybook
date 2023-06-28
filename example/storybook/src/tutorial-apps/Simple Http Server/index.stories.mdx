@@ -1,0 +1,234 @@
+---
+title: Simple Http Server | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Box, AppProvider, Link } from '@gluestack/design-system';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+
+<Meta title="Tutorials/Simple Http Server" />
+
+# Tutorial: Simple Http Server
+
+This tutorial is about how to run a Simple Http Server using bolt.
+
+## Table of Contents
+
+- Objectives
+
+- Project Structure
+
+- Initializing the project using Bolt
+
+- Adding service-one as a Bolt Service
+
+- Running the Project
+
+- Running the Project on Docker
+
+- Running the Project on Local
+
+- Listing Bolt Services
+
+- Monitoring Service Logs
+
+- Stopping the Project
+
+## Objectives
+
+Here we have created a project where we have one service called `service-one` which is a simple http server made using `express` and `nodejs`.
+
+Our Main objectives are:
+
+- Run this project using bolt in local machine.
+- Run this project using bolt in docker.
+
+## Project Structure
+
+The project structure of our app is as follows:
+
+```bash
+# Below's the directory structure of our project.
+simple-http-server/
+╰─➤ service-one/
+  ╰─➤ bolt.service.yaml
+  ╰─➤ build.Dockerfile
+  ╰─➤ index.js
+  ╰─➤ package.json
+  ╰─➤ package-lock.json
+  ╰─➤ .env.tpl
+  ╰─➤ run.Dockerfile
+╰─➤ .env
+╰─➤ .env.tpl
+╰─➤ bolt.yaml
+╰─➤ .gitignore
+╰─➤ Readme.md
+```
+
+## Initializing the project using Bolt
+
+At first we have initialized the project by running `bolt init` command to create `bolt.yaml` file.
+
+```bash
+$ cd simple-http-server
+$ bolt init -n simpleserver
+```
+
+It has created a `bolt.yaml` file in our project's root directory.
+
+```yaml
+envfile: .env.tpl
+project_id: "1687868543060"
+project_name: simpleserver
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```
+
+## Adding service-one as a Bolt Service
+
+Now, in order to add service-one as a service in bolt we have executed the following command:
+
+```bash
+$ bolt service:add myapp service-one/
+Creating app in service-one
+Scanning source code
+Detected Node.js app
+Installed myapp service in service-one
+Verifying metadata for other services..
+Metadata verified
+```
+
+Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
+
+```yaml
+# This is how bolt.yaml file looks after adding service-one as a service
+envfile: .env.tpl
+project_id: "1687868543060"
+project_name: simpleserver
+default_project_runner: host
+default_service_runner: local
+services:
+  myapp:
+    path: service-one
+ingress: null
+```
+
+```yaml
+# This is how service-one/bolt.service.yaml looks
+container_name: myapp
+stateless: true
+service_runners:
+  local:
+    envfile: .env
+    build: npm install && npm run start
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - service-one:/app
+      - /app/node_modules
+```
+## Running the Project
+
+Now, let's run our service using Bolt.
+
+```bash
+# The following command will run the service as per the configuration in bolt.yaml file
+$ bolt up
+>> Creating Ingress simpleserver...
+>> No ingress found in config. Skipping route generation...
+$ bolt env:generate
+$ bolt env:generate
+$ sh -c 'npm install && npm run start'
+
+"myapp" service is up on local platform
+```
+
+By default, the configuration in `bolt.yaml` file is to run the project on local machine.
+
+You can now access service-one at [http://localhost:3000](http://localhost:3000).
+
+## Running the Project on Docker
+
+Inorder to run the service in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `docker`.
+
+```yaml
+# This is how bolt.yaml file should look like if you want to run the service in docker
+envfile: .env.tpl
+project_id: "1687868543060"
+project_name: simpleserver
+default_project_runner: host
+default_service_runner: docker
+services:
+  myapp:
+    path: service-one
+ingress: null
+```
+
+Now if you run `bolt up` command it will run the service in docker.
+
+## Running the Project on Local
+
+Inorder to run the service in local when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `local`.
+
+```yaml
+# This is how bolt.yaml file should look like if you want to run the service on local
+envfile: .env.tpl
+project_id: "1687868543060"
+project_name: simpleserver
+default_project_runner: host
+default_service_runner: local
+services:
+  myapp:
+    path: service-one
+ingress: null
+```
+
+Now if you run `bolt up` command it will run the service on local.
+
+
+## Listing Bolt Services
+
+You can also see the list of services in your bolt project and their statuses using the `service:list` command.
+
+```bash
+$ bolt service:list
+╔═══╤══════════════╤════════╤════════════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name │ Status │ Project Runner │ Service Runner │ Port │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 1 │ myapp        │ up     │ host           │ local          │ NA   │ 13899     ║
+╚═══╧══════════════╧════════╧════════════════╧════════════════╧══════╧═══════════╝
+```
+
+## Monitoring Service Logs
+
+To monitor logs, use the following command:
+
+```bash
+$ bolt log myapp
+```
+
+To keep monitoring logs in live mode, use the following command:
+
+```bash
+$ bolt log --follow myapp
+```
+
+## Stopping Your Project
+
+To stop your project, you can run the following command:
+
+```bash
+$ bolt down
+>> Stopping todo-app...
+
+"myapp" is down from local platform
+
+>> todo-app is down.
+```
+

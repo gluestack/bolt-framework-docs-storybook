@@ -46,6 +46,13 @@ export const parameters = {
             'deploy:watch',
           ],
         ],
+        'Tutorials',
+        [
+          'Simple Http Server',
+          'Next Postgres PgAdmin',
+          'Expo App',
+          'Laravel App',
+        ],
       ],
     },
   },
