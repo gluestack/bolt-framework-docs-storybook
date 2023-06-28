@@ -3,8 +3,9 @@ title: Your First Bolt Project | bolt-framework
 description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
 ---
 
-import { Link } from '@gluestack/design-system';
+import { Box, AppProvider, Link } from '@gluestack/design-system';
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
 
 <Meta title="Getting Started/Your First Bolt Project" />
 
@@ -13,6 +14,16 @@ import { Canvas, Meta, Story } from '@storybook/addon-docs';
 ## Table of Contents
 
 Let's create a project that uses Bolt to run a simple ExpressJS server.
+
+<AppProvider>
+  <Box>
+    <video controls width="80%">
+      <source src="assets/Bolt-Demo.mp4" type="video/mp4"/>
+      Your browser does not support the video tag.
+    </video>
+  </Box>
+</AppProvider>
+
 
 - Adding project files
 - Creating Bolt Project
