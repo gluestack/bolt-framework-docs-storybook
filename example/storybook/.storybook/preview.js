@@ -21,6 +21,7 @@ export const parameters = {
           'Your First Bolt Project',
           'Adding Bolt to an Existing Project',
           'ENV Management',
+          'Service Management',
         ],
         'API Reference',
         [
