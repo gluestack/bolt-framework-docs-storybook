@@ -6,7 +6,6 @@ description: Run Docker containers, child processes, or even encapsulate your en
 import { Box, AppProvider, Link } from '@gluestack/design-system';
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
-
 <Meta title="Tutorials/Expo App" />
 
 # Tutorial: Expo App
@@ -52,7 +51,7 @@ expo-app/
 
 ## Initializing the project using Bolt
 
-At first we have initialized the project by running `bolt init` command to create `bolt.yaml` file.
+At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
 
 ```bash
 $ cd expo-app
@@ -63,7 +62,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: "1687780932260"
+project_id: '1687780932260'
 project_name: expo-app
 default_project_runner: host
 default_service_runner: local
@@ -90,7 +89,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding service as a service
 envfile: .env.tpl
-project_id: "1687780932260"
+project_id: '1687780932260'
 project_name: expo-app
 default_project_runner: host
 default_service_runner: local
@@ -137,7 +136,7 @@ Inorder to run the service in local when you run `bolt up` command you need to c
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service on local
 envfile: .env.tpl
-project_id: "1687780932260"
+project_id: '1687780932260'
 project_name: expo-app
 default_project_runner: host
 default_service_runner: local
@@ -148,7 +147,6 @@ ingress: null
 ```
 
 Now if you run `bolt up` command it will run the service on local.
-
 
 ## Listing Bolt Services
 
@@ -193,4 +191,3 @@ $ bolt down
 ## Repo Link
 
 To clone the project you can use [bolt-framework-tutorial-apps/examples/expo-app](https://github.com/gluestack/bolt-framework-tutorial-apps/tree/main/examples/expo-app)
-

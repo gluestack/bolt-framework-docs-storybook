@@ -6,12 +6,11 @@ description: Run Docker containers, child processes, or even encapsulate your en
 import { Box, AppProvider, Link } from '@gluestack/design-system';
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
-
 <Meta title="Tutorials/Next Postgres PgAdmin" />
 
 # Tutorial: Next Postgres PgAdmin
-This tutorial is about how to run a Next.js Postgress and PgAdmin in a project using bolt.
 
+This tutorial is about how to run a Next.js Postgress and PgAdmin in a project using bolt.
 
 ## Table of Contents
 
@@ -55,7 +54,7 @@ next-postgres-pgadmin/
 
 ## Initializing the project using Bolt
 
-At first we have initialized the project by running `bolt init` command to create `bolt.yaml` file.
+At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
 
 ```bash
 $ cd next-postgres-pgadmin
@@ -66,7 +65,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: "1687779995699"
+project_id: '1687779995699'
 project_name: next-postgres-pgadmin
 default_project_runner: host
 default_service_runner: local
@@ -114,7 +113,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after executing the above commands
 envfile: .env.tpl
-project_id: "1687779995699"
+project_id: '1687779995699'
 project_name: next-postgres-pgadmin
 default_project_runner: host
 default_service_runner: local
@@ -139,7 +138,7 @@ We have added ingress configuration for our project inside bolt.yaml file to acc
 ```yaml
 # This is how bolt.yaml file looks finally after adding ingress configuration
 envfile: .env.tpl
-project_id: "1687779995699"
+project_id: '1687779995699'
 project_name: next-postgres-pgadmin
 default_project_runner: host
 default_service_runner: local
@@ -167,9 +166,6 @@ ingress:
         proxy_pass: http://host.docker.internal:8080
 ```
 
-
-
-
 ## Running the Project
 
 Now, let's run our services using Bolt.
@@ -190,7 +186,7 @@ Inorder to run the services in docker when you run `bolt up` command you need to
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service in docker
 envfile: .env.tpl
-project_id: "1687779995699"
+project_id: '1687779995699'
 project_name: next-postgres-pgadmin
 default_project_runner: host
 default_service_runner: docker
@@ -227,7 +223,7 @@ Inorder to run the services in local when you run `bolt up` command you need to 
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service in local
 envfile: .env.tpl
-project_id: "1687779995699"
+project_id: '1687779995699'
 project_name: next-postgres-pgadmin
 default_project_runner: host
 default_service_runner: local

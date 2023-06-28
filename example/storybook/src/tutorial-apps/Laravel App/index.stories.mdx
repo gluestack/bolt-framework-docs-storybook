@@ -6,7 +6,6 @@ description: Run Docker containers, child processes, or even encapsulate your en
 import { Box, AppProvider, Link } from '@gluestack/design-system';
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
-
 <Meta title="Tutorials/Laravel App" />
 
 # Tutorial: Laravel App
@@ -58,7 +57,7 @@ laravel-app/
 
 ## Initializing the project using Bolt
 
-At first we have initialized the project by running `bolt init` command to create `bolt.yaml` file.
+At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
 
 ```bash
 $ cd laravel-app
@@ -69,7 +68,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: "1687940133023"
+project_id: '1687940133023'
 project_name: laravel
 default_project_runner: host
 default_service_runner: local
@@ -96,7 +95,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding service as a service
 envfile: .env.tpl
-project_id: "1687940133023"
+project_id: '1687940133023'
 project_name: laravel
 default_project_runner: host
 default_service_runner: local
@@ -120,6 +119,7 @@ service_runners:
     ports:
       - 8000:8000
 ```
+
 ## Running the Project
 
 Now, let's run our service using Bolt.
@@ -147,7 +147,7 @@ Inorder to run the service in docker when you run `bolt up` command you need to 
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service in docker
 envfile: .env.tpl
-project_id: "1687940133023"
+project_id: '1687940133023'
 project_name: laravel
 default_project_runner: host
 default_service_runner: docker
@@ -166,7 +166,7 @@ Inorder to run the service in local when you run `bolt up` command you need to c
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service on local
 envfile: .env.tpl
-project_id: "1687940133023"
+project_id: '1687940133023'
 project_name: laravel
 default_project_runner: host
 default_service_runner: local
@@ -177,7 +177,6 @@ ingress: null
 ```
 
 Now if you run `bolt up` command it will run the service on local.
-
 
 ## Listing Bolt Services
 
@@ -222,4 +221,3 @@ $ bolt down
 ## Repo Link
 
 To clone the project you can use [bolt-framework-tutorial-apps/examples/laravel-app](https://github.com/gluestack/bolt-framework-tutorial-apps/tree/main/examples/laravel-app)
-

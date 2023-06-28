@@ -1,17 +1,16 @@
 ---
-title: Simple Http Server | bolt-framework
+title: Simple HTTP Server | bolt-framework
 description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
 ---
 
 import { Box, AppProvider, Link } from '@gluestack/design-system';
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
+<Meta title="Tutorials/Simple HTTP Server" />
 
-<Meta title="Tutorials/Simple Http Server" />
+# Tutorial: Simple HTTP Server
 
-# Tutorial: Simple Http Server
-
-This tutorial is about how to run a Simple Http Server using bolt.
+This tutorial is about how to run a Simple HTTP Server using bolt.
 
 ## Table of Contents
 
@@ -68,7 +67,7 @@ simple-http-server/
 
 ## Initializing the project using Bolt
 
-At first we have initialized the project by running `bolt init` command to create `bolt.yaml` file.
+At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
 
 ```bash
 $ cd simple-http-server
@@ -79,7 +78,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: "1687868543060"
+project_id: '1687868543060'
 project_name: simpleserver
 default_project_runner: host
 default_service_runner: local
@@ -106,7 +105,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding service-one as a service
 envfile: .env.tpl
-project_id: "1687868543060"
+project_id: '1687868543060'
 project_name: simpleserver
 default_project_runner: host
 default_service_runner: local
@@ -133,6 +132,7 @@ service_runners:
       - service-one:/app
       - /app/node_modules
 ```
+
 ## Running the Project
 
 Now, let's run our service using Bolt.
@@ -160,7 +160,7 @@ Inorder to run the service in docker when you run `bolt up` command you need to 
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service in docker
 envfile: .env.tpl
-project_id: "1687868543060"
+project_id: '1687868543060'
 project_name: simpleserver
 default_project_runner: host
 default_service_runner: docker
@@ -179,7 +179,7 @@ Inorder to run the service in local when you run `bolt up` command you need to c
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service on local
 envfile: .env.tpl
-project_id: "1687868543060"
+project_id: '1687868543060'
 project_name: simpleserver
 default_project_runner: host
 default_service_runner: local
@@ -190,7 +190,6 @@ ingress: null
 ```
 
 Now if you run `bolt up` command it will run the service on local.
-
 
 ## Listing Bolt Services
 
@@ -231,4 +230,3 @@ $ bolt down
 
 >> todo-app is down.
 ```
-

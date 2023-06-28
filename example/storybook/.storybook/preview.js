@@ -23,6 +23,13 @@ export const parameters = {
           'ENV Management',
           'Service Management',
         ],
+        'Tutorials',
+        [
+          'Simple HTTP Server',
+          'Next Postgres PgAdmin',
+          'Expo App',
+          'Laravel App',
+        ],
         'API Reference',
         [
           'bolt.yaml',
@@ -45,13 +52,6 @@ export const parameters = {
             'deploy',
             'deploy:watch',
           ],
-        ],
-        'Tutorials',
-        [
-          'Simple Http Server',
-          'Next Postgres PgAdmin',
-          'Expo App',
-          'Laravel App',
         ],
       ],
     },
