@@ -19,7 +19,7 @@ export const parameters = {
           'Terminologies',
           'Installing the Global CLI',
           'Your First Bolt Project',
-          'Adding Bolt to an Existing Project',
+          'Add Bolt to Existing Project',
           'ENV Management',
           'Service Management',
         ],
