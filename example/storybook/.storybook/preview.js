@@ -34,7 +34,7 @@ export const parameters = {
         [
           'bolt.yaml',
           'bolt.service.yaml',
-          'ingress',
+          'bolt ingress',
           'boltignore',
           'CLI Reference',
           [
