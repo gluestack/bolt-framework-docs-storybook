@@ -32,7 +32,7 @@ project-a/
 
 The `env:generate` command scans the project structure based on `bolt.yaml` & `bolt.service.yaml` files' `envfile` variables, identifies `.env.tpl` files, and generates corresponding `.env` files for each microservice. It also exports microservice-specific variables to the root variable, allowing inter-microservice variable referencing.
 
-### Generating `.env` Files
+### Generating `.env` file
 
 When executing the `env:generate` command, it performs the following actions:
 
@@ -46,7 +46,7 @@ The `env:generate` command exports microservice-specific variables to the root v
 
 For example, if there is a variable named `my_var` in `service-a`, it would be exported as `SERVICEA_MY_VAR` in the root variable. This enables other microservices to reference `SERVICEA_MY_VAR` to access the value of `my_var` from `service-a`.
 
-### Root `.env.tpl` File
+### Root `.env.tpl` file
 
 The root directory of the project contains a `.env.tpl` file that defines project-wide variables applicable to the entire project. Variables defined in this file are not prefixed with a service name since they are not specific to any particular microservice.
 
