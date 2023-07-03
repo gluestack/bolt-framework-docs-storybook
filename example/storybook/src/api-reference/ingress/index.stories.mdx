@@ -63,6 +63,11 @@ ingress:
 
 `proxy_pass` is the URL that you want to reverse proxy pass to.
 
+> Notes:
+> • If you're using Host Project Runner, you should use `http://host.docker.internal:PORT_NUMBER` as the value of `proxy_pass`.
+> • If you're using Host Project Runner on a Linux based operating system, you should use `http://localhost:PORT_NUMBER` as the value of `proxy_pass`.
+> • If you're using VM Project Runner, you should use `http://localhost:PORT_NUMBER` as the value of `proxy_pass`.
+
 #### client_max_body_size (optional)
 
 `client_max_body_size` is the maximum body size that you want to allow. It accepts number in megabyte & its default value is `50`.
