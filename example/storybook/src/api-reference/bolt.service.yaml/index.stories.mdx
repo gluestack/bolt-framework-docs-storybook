@@ -7,11 +7,9 @@ import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 <Meta title="API Reference/bolt.service.yaml" />
 
-# Definig Bolt Service file
+# Defining Bolt Service file
 
 Bolt CLI manages your projects and its services using two types of yaml files. One of them is **bolt.service.yaml**. Here's how **bolt.service.yaml** work and manages processes for you.
-
-## bolt.service.yaml
 
 This file contains your service's information like container name, service-runners platform it can run on. And each service-runner object contains envfile path and build command.
 Here's how a sample bolt service file looks like —
@@ -26,6 +24,8 @@ service-runners:
   docker:
     envfile: <path/to/envfile>
     build: <path/to/your/Dockerfile>
+    volumes:
+      - <your host machine's path>:<your project's path in docker>
     ports:
       - <your host machine's port>:<your project's running port in docker>
 ```
@@ -42,6 +42,68 @@ service-runners:
   docker:
     envfile: .env
     build: ./run.Dockerfile
+    volumes:
+      - .:/app
     ports:
       - 3000:3000
 ```
+
+## Definition
+
+### container_name
+
+This is the name of your service container. For local service runner, this name will be used as the name of the child process. For docker service runner, this name will be used as the name of the docker container.
+
+### stateless
+
+> This is still in development and is coming soon...!
+
+This is a boolean value. If set to true, the service will be stateless. If set to false, the service will be stateful. For local service runner, this means that the child process will be restarted if it crashes. For docker service runner, this means that the docker container will be restarted if it crashes.
+
+### service-runners
+
+This is an object that contains the service runners for your service. Currently, Bolt CLI supports two service runners — local and docker. We will provide you a plugin architecture which will enable you to add more service runners by creating a plugin.
+
+This is how a local service runner object looks like —
+
+```yaml
+  local:
+    envfile: <path/to/envfile>
+    build: <your project's run command>
+```
+
+This is how a docker service runner object looks like —
+
+```yaml
+  docker:
+    envfile: <path/to/envfile>
+    build: <path/to/your/Dockerfile>
+    volumes:
+      - <your host machine's path>:<your project's path in docker>
+    ports:
+      - <your host machine's port>:<your project's running port in docker>
+```
+
+### service-runners > local or docker > envfile
+
+This is the path to your service's envfile. This envfile will be used to set environment variables for your service. You can use `.env.tpl` as your envfile. Bolt CLI will automatically generate `.env` file from `.env.tpl` file.
+
+### service-runners > local or docker > build
+
+This is the command that will be used to run your service.
+
+For local service runner, this command contains string to run your service as a child process.
+
+For docker service runner, this command contains Dockerfile path to your service as a Docker container.
+
+### service-runners > docker > volumes
+
+This is an array of strings. Each string contains a volume mount path. The first part of the string is the path to the directory in your host machine. The second part of the string is the path to the directory in your docker container.
+
+> Note: This is an optional field. If you don't want to mount any volume, you can skip this field.
+
+### service-runners > docker > ports
+
+This is an array of strings. Each string contains a port mapping. The first part of the string is the port number in your host machine. The second part of the string is the port number in your docker container.
+
+> Note: This is an optional field. If you don't want to map any port, you can skip this field.
