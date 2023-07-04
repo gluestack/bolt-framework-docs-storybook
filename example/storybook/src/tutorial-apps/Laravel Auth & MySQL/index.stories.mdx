@@ -1,0 +1,269 @@
+---
+title: Laravel Auth & MySQL | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Box, AppProvider, Link } from '@gluestack/design-system';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Tutorials/Laravel Auth & MySQL" />
+
+# Tutorial: Laravel Auth & MySQL
+
+This tutorial is about how to run a Laravel app on our Local and MySQL on Docker using bolt. Below's the video showing how to run this tutorial.
+
+<AppProvider>
+  <Box>
+    <video controls width="80%">
+      <source src="/assets/LaravelAuthMySQL.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </Box>
+</AppProvider>
+
+## Table of Contents
+
+- Objectives
+- Project Structure
+- Initialising the project using Bolt
+- Adding Laravel service as a Bolt Service
+- Adding MySQL service as a Bolt Service
+- Running the Project
+- Listing Bolt Services
+- Monitoring Service Logs
+- Stopping Your Project
+- Repo Link
+
+## Objectives
+
+- Run this project's Laravel App using Local service runner
+- Run this project's MySQL container using Docker service runner
+
+## Project Structure
+
+The project structure of our app is as follows:
+
+```bash
+# Below's the directory structure of our project.
+laravel-auth-mysql/
+╰─➤ services
+  ╰─➤ laravel
+    ╰─➤ ...laravel files
+    ╰─➤ bolt.service.yaml
+    ╰─➤ build.Dockerfile
+    ╰─➤ .env.tpl
+    ╰─➤ run.Dockerfile
+  ╰─➤ mysql
+    ╰─➤ ...mysql files
+    ╰─➤ bolt.service.yaml
+    ╰─➤ build.Dockerfile
+    ╰─➤ .env.tpl
+    ╰─➤ run.Dockerfile
+╰─➤ .env
+╰─➤ .env.tpl
+╰─➤ bolt.yaml
+╰─➤ .gitignore
+╰─➤ README.md
+```
+
+## Initialising the project using Bolt
+
+At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
+
+```bash
+$ cd laravel-auth-mysql
+$ bolt init --name laravelmysql
+```
+
+It has created a `bolt.yaml` file in our project's root directory.
+
+```yaml
+envfile: .env.tpl
+project_id: '1687940133023'
+project_name: laravelmysql
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```
+
+## Adding Laravel service as a Bolt Service
+
+To add Laravel service, run the following command -
+
+```bash
+$ bolt service:add laravel services/laravel
+Creating app in service
+Scanning source code
+Detected Laravel app
+Installed laravel service in service
+Verifying metadata for other services..
+Metadata verified
+```
+
+Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
+
+```yaml
+# This is how bolt.yaml file looks after adding laravel service
+envfile: .env.tpl
+project_id: '1687940133023'
+project_name: laravelmysql
+default_project_runner: host
+default_service_runner: local
+services:
+  laravel:
+    path: services/laravel
+ingress: null
+```
+
+```yaml
+# This is how services/laravel/bolt.service.yaml looks
+container_name: laravel
+stateless: true
+service_runners:
+  local:
+    envfile: .env
+    build: composer install && php artisan serve
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 8000:8000
+```
+
+## Adding MySQL service as a Bolt Service
+
+To add MySQL service, run the following command -
+
+```bash
+$ bolt service:add mysql services/mysql
+Creating app in service
+Scanning source code
+Detected MySQL app
+Installed mysql service in service
+Verifying metadata for other services..
+Metadata verified
+```
+
+Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
+
+```yaml
+# This is how bolt.yaml file looks after adding mysql service
+envfile: .env.tpl
+project_id: '1687940133023'
+project_name: laravelmysql
+default_project_runner: host
+default_service_runner: local
+services:
+  laravel:
+    path: services/laravel
+  mysql:
+    path: services/mysql
+ingress: null
+```
+
+```yaml
+# This is how services/mysql/bolt.service.yaml looks
+# Note that volumes are not created, we have added it manually to the service
+container_name: mysql
+stateless: false
+service_runners:
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    volumes:
+      - ./services/mysql/data:/var/lib/mysql
+    ports:
+      - 3306:3306
+```
+
+## Running the Project
+
+Now, let's run the project using Bolt.
+
+```bash
+# The following command will run the service as per the configuration in bolt.yaml file
+$ bolt up
+
+"laravel" service is up on local platform
+"mysql" service is up on docker platform
+```
+
+You can now access service at [http://localhost:8000](http://localhost:8000).
+
+Once you have run the project, you need to run some Laravel specific commands to database migrate, database seed & client app assets bundling.
+
+You can run the following commands to get you started -
+
+```bash
+# Goto laravel service directory
+$ cd examples/laravel-auth-mysql/services/laravel
+
+# Migrate tables
+$ php artisan migrate
+
+# Seed tables
+$ php artisan db:seed
+
+# Install npm dependencies
+$ npm install
+
+# Create app build
+$ npm run build
+
+# Or run app build in dev node
+$ npm run dev
+```
+
+## Listing Bolt Services
+
+You can also see the list of services in your bolt project and their statuses using the `service:list` command.
+
+```bash
+$ bolt service:list
+╔═══╤══════════════╤════════╤════════════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name │ Status │ Project Runner │ Service Runner │ Port │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 1 │ laravel      │ up     │ host           │ local          │ NA   │ 17920     ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 2 │ mysql        │ up     │ host           │ docker         │ 3306 │ mysql     ║
+╚═══╧══════════════╧════════╧════════════════╧════════════════╧══════╧═══════════╝
+```
+
+## Monitoring Service Logs
+
+To monitor logs, use the following command:
+
+```bash
+$ bolt log laravel
+```
+
+To keep monitoring logs in live mode, use the following command:
+
+```bash
+$ bolt log --follow laravel
+```
+
+## Stopping Your Project
+
+To stop your project, you can run the following command:
+
+```bash
+$ bolt down
+>> Stopping laravelmysql...
+>> Stopping Docker Container...
+
+"laravel" is down from local platform
+
+>> Done with Stopping Docker Container...
+>> Removing Docker Container...
+>> Done with Removing Docker Container...
+
+"mysql" is down from docker platform
+
+>> laravelmysql is down.
+```
+
+## Repo Link
+
+To clone the project you can use [bolt-framework-tutorial-apps/examples/laravel-auth-mysql](https://github.com/gluestack/bolt-framework-tutorial-apps/tree/main/examples/laravel-auth-mysql)

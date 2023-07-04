@@ -29,6 +29,7 @@ export const parameters = {
           'Next Postgres PgAdmin',
           'Expo App',
           'Laravel App',
+          'Laravel Auth & MySQL',
         ],
         'API Reference',
         [
