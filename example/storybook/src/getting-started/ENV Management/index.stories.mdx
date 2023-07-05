@@ -1,127 +1,126 @@
 ---
-title: Service Management | bolt-framework
+title: ENV Management | bolt-framework
 description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
 ---
 
 import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
-<Meta title="Getting Started/Service Management" />
+<Meta title="Getting Started/ENV Management" />
 
-# Service Management
+# ENV Management
 
-To run your services within Docker or Local. By familiarising yourself with Bolt's functionality, you can effectively handle your projects and their services. Here's a breakdown of how Bolt operates:
+## Introduction
 
-- Each project can have multiple services
-- Bolt `init` command creates `bolt.yaml` file for a project
-- Bolt `service:add` command creates `bolt.service.yaml` file for each service
-- Bolt `up` command runs your project
-- Bolt `down` command shuts down your project's running services
-- Bolt `log` command allows you to log the service or keep monitoring the service
+This document provides a detailed explanation of the `env:generate` command and its usage within a project that consists of multiple microservices. The command allows you to generate `.env` files based on `.env.tpl` templates, enabling the management of environment variables in a structured manner.
 
-Let's dig in more into each of these pointers to get you started with Bolt!
+## Project Structure
 
-### Table of Contents
+In this project setup, we have a root directory representing the project itself, which contains multiple microservice directories. Each microservice directory has its own `.env.tpl` file that defines environment variables specific to that microservice. The root directory also contains a `.env.tpl` file, which defines project-wide variables applicable to the entire project.
 
-- Initialise a Project as Bolt Project
-- Add a Service as Bolt Service
-- Listing of Services in a Project
-- Running a Project
-- Running only a specific Service in Project
-- Shutting down only a specific Service in Project
-- Shutting down a Project
-- Logging a Service
-- Monitoring a Service
+The project structure looks as follows:
 
-## Initialise a Project as Bolt Project
-
-In order to initialise any project as a Bolt project, you need to run the following command:
-
-```bash
-$ bolt init
+```
+project-a/
+  .env.tpl (project-wide variables)
+  service-a/
+    .env.tpl (variables specific to service-a)
+  service-b/
+    .env.tpl (variables specific to service-b)
 ```
 
-That's it! This command will create a `bolt.yaml` file in your project's root directory. This file will contain all the information about your project and its services.
+## env:generate Command
 
-> Note: At this point, the services index of your yaml file will be empty. We will learn adding a service in the next section.
+The `env:generate` command scans the project structure based on `bolt.yaml` & `bolt.service.yaml` files' `envfile` variables, identifies `.env.tpl` files, and generates corresponding `.env` files for each microservice. It also exports microservice-specific variables to the root variable, allowing inter-microservice variable referencing.
 
-## Add a Service as Bolt Service
+### Generating `.env` file
 
-In order to add a service to your project, you need to run the following command:
+When executing the `env:generate` command, it performs the following actions:
 
-```bash
-$ bolt service:add <service-name> <service-directory-path>
+1. Scans the project structure based on `bolt.yaml` & `bolt.service.yaml` files and identifies `.env.tpl` files within each microservice directory.
+2. For each `.env.tpl` file found, generates a corresponding `.env` file in the same directory.
+3. Populates the generated `.env` file with variables and their respective values as defined in the `.env.tpl` file.
+
+### Microservice Variable Export
+
+The `env:generate` command exports microservice-specific variables to the root variable, allowing easy referencing among microservices. The exported variables follow the format: `%<service_name_without_special_chars>_<variable_name>%`.
+
+For example, if there is a variable named `my_var` in `service-a`, it would be exported as `SERVICEA_MY_VAR` in the root variable. This enables other microservices to reference `SERVICEA_MY_VAR` to access the value of `my_var` from `service-a`.
+
+### Root `.env.tpl` file
+
+The root directory of the project contains a `.env.tpl` file that defines project-wide variables applicable to the entire project. Variables defined in this file are not prefixed with a service name since they are not specific to any particular microservice.
+
+## Usage Example
+
+To illustrate the usage of the `env:generate` command and variable referencing, let's consider a scenario:
+
+Assume the following variables are defined in the respective `.env.tpl` files:
+
+**project-a/.env.tpl:**
+
+```
+PROJECT_NAME="My Project"
+LOG_LEVEL=debug
 ```
 
-This command will create a `bolt.service.yaml` file in your service's directory. This file will contain all the information about your service.
+**project-a/service-a/.env.tpl:**
 
-This command has auto detection enabled and we have templates already prepared for few frameworks and libraries to help you with the service creation & configuration. To find out more about available templates, please refer our `service:add` [CLI Reference section](/docs/api-reference/cli-reference/service-add).
-
-## Listing of Services in a Project
-
-In order to list all the services in your project, you need to run the following command:
-
-```bash
-$ bolt service:list
+```
+SERVICEA_HOST=localhost
+SERVICEA_PORT=8080
 ```
 
-This command will list all the services in your project with their statuses and other information.
+**project-a/service-b/.env.tpl:**
 
-## Running a Project
-
-In order to run your project, you need to run the following command:
-
-```bash
-$ bolt up
+```
+SERVICEB_API_KEY=12345
+SERVICEB_BASE_URL=https://api.example.com
 ```
 
-This command will run all the services in your project. If you have not yet added any service to your project, this command will throw an error.
+When executing the `env:generate` command, the following files will be generated:
 
-## Running only a specific Service in Project
+**project-a/.env:**
 
-In order to run a specific service in your project, you need to run the following command:
-
-```bash
-bolt service:up <service-name> --service-runner <local or docker>
+```
+PROJECT_NAME="My Project"
+LOG_LEVEL=debug
 ```
 
-This command will run the specified service in your project. If you have not yet added any service to your project, this command will throw an error.
+**project-a/service-a/.env:**
 
-## Shutting down only a specific Service in Project
-
-In order to shut down a specific service in your project, you need to run the following command:
-
-```bash
-bolt service:down <service-name>
+```
+SERVICEA_HOST=localhost
+SERVICEA_PORT=8080
 ```
 
-This command will shut down the specified service in your project. If you have not yet added any service to your project, this command will throw an error.
+**project-a/service-b/.env:**
 
-## Shutting down a Project
-
-In order to shut down your project, you need to run the following command:
-
-```bash
-$ bolt down
+```
+SERVICEB_API_KEY=12345
+SERVICEB_BASE_URL=https://api.example.com
 ```
 
-This command will shut down all the services in your project. If you have not yet added any service to your project, this command will throw an error.
+Additionally, the root variable will contain the following exported variables:
 
-## Logging a Service
-
-In order to log a service, you need to run the following command:
-
-```bash
-$ bolt log <service-name>
+```
+SERVICEA_HOST=localhost
+SERVICEA_PORT=8080
+SERVICEB_API_KEY=12345
+SERVICEB_BASE_URL=https://api.example.com
 ```
 
-This command will log the specified service in your project. If you have not yet added any service to your project, this command will throw an error.
+Microservices can now reference these variables using the `%service_name_variable_name%` syntax. For example, in `service-a`, you can use `%SERVICEB_API_KEY%` to access the value of `SERVICEB_API_KEY` defined in `service-b`.
 
-## Monitoring a Service
+## Summary
 
-In order to monitor a service, you need to run the following command:
+The `env:generate` command simplifies the management of environment variables in a project with multiple microservices. By using `.env.tpl` files, you can define variables specific to each microservice and a project-wide `.env.tpl` file for variables applicable to the entire project. The command generates `.env` files for each microservice and exports microservice-specific variables to the root variable, allowing for easy referencing among microservices.
 
-```bash
-$ bolt log --follow <service-name>
-```
+By following this approach, you can maintain a structured and consistent environment variable management system for your project.
 
-This command will monitor the specified service in your project. If you have not yet added any service to your project, this command will throw an error.
+## Conclusion
+
+This document provided an overview of the `env:generate` command and its usage in a project with multiple microservices. It explained the project structure, the generation of `.env` files, the export of microservice-specific variables to the root variable, and demonstrated an example scenario.
+
+By leveraging the `env:generate` command and adhering to the recommended project structure, you can effectively manage environment variables in your multi-microservice projects.
+
+If you have any further questions or require additional assistance, please refer to the documentation or reach out to the support team.
