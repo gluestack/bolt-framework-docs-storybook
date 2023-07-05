@@ -68,18 +68,16 @@ This is the name of your service container. For local service runner, this name 
 
 > This is still in development and is coming soon...!
 
-This is a boolean value. If set to true, the service will be stateless. If set to false, the service will be stateful. For local service runner, this means that the child process will be restarted if it crashes. For docker service runner, this means that the docker container will be restarted if it crashes.
-
 ### default_service_runner
 
 This is the default service runner for your service. You can use `local`, `docker`, `vmlocal` or `vmdocker` as your default service runner.
 
 Let's understand what the default service runner values are -
 
-1. If you use `local` as your default service runner, Bolt CLI will run your services on your host machine's local.
-2. If you use `docker` as your default service runner, Bolt CLI will run your services on your host machine's Docker.
-3. If you use `vmlocal` as your default service runner, Bolt CLI will run your services on your virtual machine's local.
-4. If you use `vmdocker` as your default service runner, Bolt CLI will run your services on your virtual machine's Docker.
+- If you use `local` as your default service runner, Bolt CLI will run your services on your host machine's local.
+- If you use `docker` as your default service runner, Bolt CLI will run your services on your host machine's Docker.
+- If you use `vmlocal` as your default service runner, Bolt CLI will run your services on your virtual machine's local.
+- If you use `vmdocker` as your default service runner, Bolt CLI will run your services on your virtual machine's Docker.
 
 > Note:
 > • To run your services on **Docker**, you need to have Docker installed on your machine
