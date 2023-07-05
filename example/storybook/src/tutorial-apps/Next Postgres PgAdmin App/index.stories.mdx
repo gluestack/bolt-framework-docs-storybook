@@ -67,8 +67,6 @@ It has created a `bolt.yaml` file in our project's root directory.
 envfile: .env.tpl
 project_id: '1687779995699'
 project_name: next-postgres-pgadmin
-default_project_runner: host
-default_service_runner: local
 services: null
 ingress: null
 ```
@@ -115,8 +113,6 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 envfile: .env.tpl
 project_id: '1687779995699'
 project_name: next-postgres-pgadmin
-default_project_runner: host
-default_service_runner: local
 services:
   todonext:
     path: todo-next
@@ -140,8 +136,6 @@ We have added ingress configuration for our project inside bolt.yaml file to acc
 envfile: .env.tpl
 project_id: '1687779995699'
 project_name: next-postgres-pgadmin
-default_project_runner: host
-default_service_runner: local
 services:
   todonext:
     path: todo-next
@@ -181,74 +175,66 @@ Here `bolt.nginx.conf` file is created from configuration provided in `ingress` 
 
 ## Running the Project on Docker
 
-Inorder to run the services in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `docker`.
+Inorder to run the services in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.service.yaml` file to `docker`.
 
 ```yaml
-# This is how bolt.yaml file should look like if you want to run the service in docker
-envfile: .env.tpl
-project_id: '1687779995699'
-project_name: next-postgres-pgadmin
-default_project_runner: host
+# This is how bolt.service.yaml file for PGAdmin should look like if you want to run it in docker
+container_name: pgadmin
+stateless: true
 default_service_runner: docker
-services:
-  todonext:
-    path: todo-next
-  postgres:
-    path: postgres
-  pgadmin:
-    path: pgadmin
-ingress:
-  - domain: nextjs.local.gluestack.app
-    port: 8000
-    options:
-      - location: /
-        rewrite_key: ^/(.*)
-        rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:3000
-  - domain: admin.local.gluestack.app
-    port: 8001
-    options:
-      - location: /
-        rewrite_key: ^/(.*)
-        rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:8080
+supported_service_runners:
+  - docker
+service_runners:
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 8080:8080
+```
+
+```yaml
+# This is how bolt.service.yaml file for Postgres should look like if you want to run it in docker
+container_name: postgres
+stateless: true
+default_service_runner: docker
+supported_service_runners:
+  - docker
+service_runners:
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/init.db/:/docker-entrypoint-initdb.d/
 ```
 
 Now if you run `bolt up` command it will run the services in docker.
 
 ## Running the Project on Local
 
-Inorder to run the services in local when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `local`.
+Inorder to run the services in local when you run `bolt up` command you need to change the `default_service_runner` in `bolt.service.yaml` file to `local`.
 
 ```yaml
-# This is how bolt.yaml file should look like if you want to run the service in local
-envfile: .env.tpl
-project_id: '1687779995699'
-project_name: next-postgres-pgadmin
-default_project_runner: host
+# This is how bolt.service.yaml file for NextJS should look like if you want to run it in local
+container_name: todonext
+stateless: true
 default_service_runner: local
-services:
-  todonext:
-    path: todo-next
-  postgres:
-    path: postgres
-  pgadmin:
-    path: pgadmin
-ingress:
-  - domain: nextjs.local.gluestack.app
-    port: 8000
-    options:
-      - location: /
-        rewrite_key: ^/(.*)
-        rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:3000
-  - domain: admin.local.gluestack.app
-    port: 8001
-    options:
-      - location: /
-        rewrite_key: ^/(.*)
-        rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:8080
+supported_service_runners:
+  - local
+  - docker
+service_runners:
+  local:
+    envfile: .env
+    build: npm install && npm run dev
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - :/app
+      - /app/todo-next/node_modules/
 ```
 
 Now if you run `bolt up` command it will run the services in local.

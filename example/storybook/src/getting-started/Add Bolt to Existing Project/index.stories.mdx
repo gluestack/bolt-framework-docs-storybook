@@ -33,8 +33,6 @@ This will create a `bolt.yaml` file in your project's root directory.
 envfile: .env.tpl
 project_id: '1687780932260'
 project_name: YOUR_PROJECT_NAME
-default_project_runner: host
-default_service_runner: local
 services: null
 ingress: null
 ```
@@ -58,8 +56,6 @@ Now if I do `bolt init` inside `bolt-project` directory, it will create a `bolt.
 envfile: .env.tpl
 project_id: '1687780932260'
 project_name: bolt-project
-default_project_runner: host
-default_service_runner: local
 services: null
 ingress: null
 ```
@@ -101,8 +97,6 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 envfile: .env.tpl
 project_id: '1687780932260'
 project_name: boltproject
-default_project_runner: host
-default_service_runner: local
 services:
   serviceone:
     path: service-one/
@@ -115,6 +109,10 @@ ingress: null
 # This is how your service-one/bolt.service.yaml looks
 container_name: serviceone
 stateless: true
+default_service_runner: local
+supported_service_runners:
+  - local
+  - docker
 service_runners:
   local:
     envfile: .env
@@ -133,6 +131,10 @@ service_runners:
 # This is how your service-two/bolt.service.yaml looks
 container_name: servicetwo
 stateless: true
+default_service_runner: local
+supported_service_runners:
+  - local
+  - docker
 service_runners:
   local:
     envfile: .env

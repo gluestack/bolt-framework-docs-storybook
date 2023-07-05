@@ -1,0 +1,62 @@
+---
+title: service:add | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="API Reference/CLI Reference/service:add" />
+
+# service:add
+
+This command helps you to add a service in your bolt project.
+
+```bash
+$ bolt service:add --help
+Usage: bolt service:add [options] <service-name> <directory-path>
+
+Adds a service to "bolt.yaml" services
+
+Arguments:
+  service-name    name of the service
+  directory-path  directory path to the service, adds "bolt.service.yaml" file
+
+Options:
+  -h, --help      display help for command
+```
+
+## Service Auto Detection
+
+This command is designed with auto detection enabled, providing the convenience of automatically generating a preconfigured bolt.service.yaml file for the service. This pre-filled file contains the essential content related to the service, eliminating the need to manually configure it from scratch.
+
+While the generated content can be modified according to your specific configuration requirements, this feature significantly expedites the process of adding a service. By eliminating the need to worry about initial configuration details, you can swiftly incorporate new services into your project.
+
+This streamlined approach enhances efficiency and reduces the potential for configuration errors, enabling you to quickly integrate services without compromising on customization options.
+
+Below's the list of Tools, Frameworks & Libraries for which the auto detection is enabled —
+
+- Angular
+- Crystal
+- Deno
+- Django
+- Elixir Phoenix
+- Express.js
+- Flutter
+- Go
+- Hasura
+- Laravel
+- Minio
+- MySQL
+- NextJS
+- Node.js
+- NuxtJS
+- Postgres
+- Python
+- React
+- RedwoodJS
+- Remix
+- Ruby
+- Ruby on Rails
+- Static Website
+- Vue
+- Nginx

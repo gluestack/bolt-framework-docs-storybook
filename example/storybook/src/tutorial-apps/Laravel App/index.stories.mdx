@@ -70,8 +70,6 @@ It has created a `bolt.yaml` file in our project's root directory.
 envfile: .env.tpl
 project_id: '1687940133023'
 project_name: laravel
-default_project_runner: host
-default_service_runner: local
 services: null
 ingress: null
 ```
@@ -97,8 +95,6 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 envfile: .env.tpl
 project_id: '1687940133023'
 project_name: laravel
-default_project_runner: host
-default_service_runner: local
 services:
   myapp:
     path: service
@@ -109,6 +105,10 @@ ingress: null
 # This is how service/bolt.service.yaml looks
 container_name: myapp
 stateless: true
+default_service_runner: local
+supported_service_runners:
+  - local
+  - docker
 service_runners:
   local:
     envfile: .env
@@ -142,38 +142,50 @@ You can now access service at [http://localhost:8000](http://localhost:8000).
 
 ## Running the Project on Docker
 
-Inorder to run the service in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `docker`.
+Inorder to run the service in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.service.yaml` file to `docker`.
 
 ```yaml
-# This is how bolt.yaml file should look like if you want to run the service in docker
-envfile: .env.tpl
-project_id: '1687940133023'
-project_name: laravel
-default_project_runner: host
+# This is how bolt.service.yaml file should look like if you want to run the service in docker
+container_name: myapp
+stateless: true
 default_service_runner: docker
-services:
-  myapp:
-    path: service
-ingress: null
+supported_service_runners:
+  - local
+  - docker
+service_runners:
+  local:
+    envfile: .env
+    build: composer install && php artisan serve
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 8000:8000
 ```
 
 Now if you run `bolt up` command it will run the service in docker.
 
 ## Running the Project on Local
 
-Inorder to run the service in local when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `local`.
+Inorder to run the service in local when you run `bolt up` command you need to change the `default_service_runner` in `bolt.service.yaml` file to `local`.
 
 ```yaml
-# This is how bolt.yaml file should look like if you want to run the service on local
-envfile: .env.tpl
-project_id: '1687940133023'
-project_name: laravel
-default_project_runner: host
+# This is how bolt.service.yaml file should look like if you want to run the service on local
+container_name: myapp
+stateless: true
 default_service_runner: local
-services:
-  myapp:
-    path: service
-ingress: null
+supported_service_runners:
+  - local
+  - docker
+service_runners:
+  local:
+    envfile: .env
+    build: composer install && php artisan serve
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 8000:8000
 ```
 
 Now if you run `bolt up` command it will run the service on local.

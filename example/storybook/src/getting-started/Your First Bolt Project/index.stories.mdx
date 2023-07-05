@@ -99,8 +99,6 @@ This will create a `bolt.yaml` file in your project's root directory.
 envfile: .env.tpl
 project_id: '1687780932260'
 project_name: boltproject
-default_project_runner: host
-default_service_runner: local
 services: null
 ingress: null
 ```
@@ -126,8 +124,6 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 envfile: .env.tpl
 project_id: '1687780932260'
 project_name: boltproject
-default_project_runner: host
-default_service_runner: local
 services:
   myapp:
     path: service-one/
@@ -138,6 +134,10 @@ ingress: null
 # This is how your service-one/bolt.service.yaml looks
 container_name: myapp
 stateless: true
+default_service_runner: local
+supported_service_runners:
+  - local
+  - docker
 service_runners:
   local:
     envfile: .env

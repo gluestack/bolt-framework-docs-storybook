@@ -1,0 +1,23 @@
+---
+title: boltignore | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="API Reference/boltignore" />
+
+# Defining Bolt Ignore file
+
+Bolt uses a `.boltignore` file to determine which files and directories to ignore when packaging your project into bolt's virtual machine. This file is similar to `.gitignore` file.
+
+This file should be kept in the root of your project directory and should be committed to your version control system.
+
+`.boltignore` file comes with `bolt init` command. It is already prefilled with the following content to get you started -
+
+```bash
+node_modules
+.logs
+.git
+vendor
+```

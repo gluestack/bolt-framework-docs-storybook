@@ -1,0 +1,33 @@
+---
+title: Introduction | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Box, AppProvider } from '@gluestack/design-system';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Getting Started/Introduction" />
+
+# Bolt: The Universal Project Runner
+
+Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+
+Bolt is a universal project runner. Bolt is designed to run child processes, Docker containers and can even encapsulate your entire project within a VM, all under a single unified API. Whether your environment is local, Docker-based, or a VM, Bolt provides a seamless, cohesive experience. Shift your focus to creating and let Bolt handle the complexities of setting up the development environment.
+
+Here's a brief overview of Bolt's Architecture:
+
+<AppProvider>
+  <Box>
+    <img src="/assets/Bolt.svg" width="100%" height="100%" alt="Bolt Architecture" />
+  </Box>
+</AppProvider>
+
+## Why Bolt?
+
+Running projects locally requires running system services and using system resources. For eg: A project may need to run a Postgres instance, an iOS simulator and a Node watcher & bundler. It can get cumbersome when you set up everything manually because you may need a Docker instance for the Postgres, a child process on the host machine to boot the iOS simulator and another child process for the Node packager. The Node packager can also run as a Docker instance. And when you run all these, the host machine may slow down and you may have to move things inside a VM. Bolt solves all those problems with a unified API for managing services (boot, kill, restart, fetch logs).
+
+<AppProvider>
+  <Box>
+    <img src="/assets/WhyBolt.svg" width="100%" alt="Why Bolt?" />
+  </Box>
+</AppProvider>

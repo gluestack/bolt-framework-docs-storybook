@@ -1,0 +1,65 @@
+---
+title: Installing the Global CLI | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Getting Started/Installing the Global CLI" />
+
+# Installing the Global CLI
+
+This document provides installation instructions for the [bolt-cli](https://www.npmjs.com/package/@gluestack/bolt-framework).
+
+## Prerequisites
+
+- Node.js (version 18.0.0 or higher)
+- Package Manager (e.g., NPM or Yarn)
+- Docker CLI (> Docker version 24.0.2, build cb74dfc)
+- fswatch (>= 1.17.1)
+- QEMU emulator (version >= 8.0.2)
+
+> Notes:
+> • You will need **Docker CLI** if and only if you are using **Docker Service Runner**
+> • You will need **QEMU emulator** if and only if you are using **VM Project Runner**
+> • You will need **fswatch** if and only if you are using **VM Project Runner**
+
+## Installation Steps
+
+In order to install [bolt-cli](https://www.npmjs.com/package/@gluestack/bolt) in your system you can either use yarn or npm to install the package.
+
+```bash
+
+# using npm
+
+npm install --global @gluestack/bolt@latest
+
+# using yarn
+
+yarn global add @gluestack/bolt@latest
+
+```
+
+After the installation is complete, you can check if the package is installed correctly by running the following command in your terminal.
+
+```bash
+
+bolt
+
+```
+
+If it's installed correctly it should give the output something like this:
+
+```bash
+Usage: Bolt [options] [command]
+
+Bolt CLI tool <VERSION_NUMBER>
+
+Options:
+  -V, --version   output the version number
+  -h, --help      display help for command
+
+Commands:
+  init [options]  Inits the project with bolt.yaml file
+  help [command]  display help for command
+```

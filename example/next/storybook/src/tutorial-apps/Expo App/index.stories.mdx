@@ -1,0 +1,193 @@
+---
+title: Expo App | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Box, AppProvider, Link } from '@gluestack/design-system';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Tutorials/Expo App" />
+
+# Tutorial: Expo App
+
+This tutorial is about how to run a Expo app using bolt.
+
+## Table of Contents
+
+- Objectives
+- Project Structure
+- Initialising the project using Bolt
+- Adding expo app as a Bolt Service
+- Running the Project
+- Running the Project on Local
+- Listing Bolt Services
+- Monitoring Service Logs
+- Stopping Your Project
+- Repo Link
+
+## Objectives
+
+Here we have an expo app created using `expo init` and we will be running it using bolt.
+
+Our Main objectives are:
+
+- Run this project using bolt in local machine.
+
+## Project Structure
+
+The project structure of our app is as follows:
+
+```bash
+# Below's the directory structure of our project.
+expo-app/
+╰─➤ expo-files...
+╰─➤ .env
+╰─➤ .env.tpl
+╰─➤ bolt.service.yaml
+╰─➤ bolt.yaml
+╰─➤ .gitignore
+╰─➤ Readme.md
+```
+
+## Initialising the project using Bolt
+
+At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
+
+```bash
+$ cd expo-app
+$ bolt init
+```
+
+It has created a `bolt.yaml` file in our project's root directory.
+
+```yaml
+envfile: .env.tpl
+project_id: '1687780932260'
+project_name: expo-app
+default_project_runner: host
+default_service_runner: local
+services: null
+ingress: null
+```
+
+## Adding expo app as a Bolt Service
+
+Now, in order to add service as a service in bolt we have executed the following command:
+
+```bash
+$ bolt service:add web .
+Creating app in service
+Scanning source code
+Detected Node.js app
+Installed web service in .
+Verifying metadata for other services..
+Metadata verified
+```
+
+Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
+
+```yaml
+# This is how bolt.yaml file looks after adding service as a service
+envfile: .env.tpl
+project_id: '1687780932260'
+project_name: expo-app
+default_project_runner: host
+default_service_runner: local
+services:
+  web:
+    path: .
+ingress: null
+```
+
+```yaml
+# This is how service/bolt.service.yaml looks
+container_name: web
+stateless: true
+service_runners:
+  local:
+    envfile: .env
+    build: npm install && npm run web
+```
+
+## Running the Project
+
+Now, let's run our service using Bolt.
+
+```bash
+# The following command will run the service as per the configuration in bolt.yaml file
+$ bolt up
+>> Creating Ingress expo-app...
+>> No ingress found in config. Skipping route generation...
+$ bolt env:generate
+$ bolt env:generate
+$ sh -c 'npm install && npm run web'
+
+"web" service is up on local platform
+```
+
+By default, the configuration in `bolt.yaml` file is to run the project on local machine.
+
+You can now access service at [http://localhost:19006](http://localhost:19006).
+
+## Running the Project on Local
+
+Inorder to run the service in local when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `local`.
+
+```yaml
+# This is how bolt.yaml file should look like if you want to run the service on local
+envfile: .env.tpl
+project_id: '1687780932260'
+project_name: expo-app
+default_project_runner: host
+default_service_runner: local
+services:
+  web:
+    path: .
+ingress: null
+```
+
+Now if you run `bolt up` command it will run the service on local.
+
+## Listing Bolt Services
+
+You can also see the list of services in your bolt project and their statuses using the `service:list` command.
+
+```bash
+$ bolt service:list
+╔═══╤══════════════╤════════╤════════════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name │ Status │ Project Runner │ Service Runner │ Port │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
+║ 1 │ web          │ up     │ host           │ local          │ NA   │ 13899     ║
+╚═══╧══════════════╧════════╧════════════════╧════════════════╧══════╧═══════════╝
+```
+
+## Monitoring Service Logs
+
+To monitor logs, use the following command:
+
+```bash
+$ bolt log web
+```
+
+To keep monitoring logs in live mode, use the following command:
+
+```bash
+$ bolt log --follow web
+```
+
+## Stopping Your Project
+
+To stop your project, you can run the following command:
+
+```bash
+$ bolt down
+>> Stopping expo-app...
+
+"web" is down from local platform
+
+>> expo-app is down.
+```
+
+## Repo Link
+
+To clone the project you can use [bolt-framework-tutorial-apps/examples/expo-app](https://github.com/gluestack/bolt-framework-tutorial-apps/tree/main/examples/expo-app)

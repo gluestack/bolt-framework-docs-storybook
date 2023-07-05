@@ -39,8 +39,9 @@ export const parameters = {
           'boltignore',
           'CLI Reference',
           [
-            'init',
             'project:list',
+            'init',
+            'project:info',
             'env:generate',
             'up',
             'down',

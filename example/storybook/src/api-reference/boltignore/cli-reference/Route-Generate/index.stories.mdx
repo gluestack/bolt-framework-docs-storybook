@@ -1,0 +1,22 @@
+---
+title: route:generate | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="API Reference/CLI Reference/route:generate" />
+
+# route:generate
+
+This command generates nginx configuration into a bolt.nginx.conf file using the ingress object available in your bolt.yaml file.
+
+```bash
+$ bolt route:generate --help
+Usage: bolt route:generate [options]
+
+Generates "bolt.nginx.conf" file from "bolt.yaml" file's ingress object
+
+Options:
+  -h, --help  display help for command
+```

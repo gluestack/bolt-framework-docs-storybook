@@ -18,8 +18,6 @@ You can generate this file using init & service:add commands. Below’s the base
 envfile: <path/to/envfile>
 project_id: '<Project ID>'
 project_name: <Project Name>
-default_project_runner: <host | vm>
-default_service_runner: <local | docker>
 services: null
 ingress: null
 ```
@@ -30,8 +28,6 @@ Here's how **bolt.yaml** file would look after running the init command —
 envfile: .env.tpl
 project_id: '1687504622045'
 project_name: mynextapp
-default_project_runner: host
-default_service_runner: local
 services: null
 ingress: null
 ```
@@ -49,18 +45,6 @@ This is the unique ID for your project. Bolt CLI uses this ID to identify your p
 ### project_name
 
 This is the name of your project. Bolt CLI uses this name to identify your project. You can use `bolt project:list` command to list all your projects.
-
-### default_project_runner
-
-This is the default project runner for your project. You can use `host` or `vm` as your default project runner. If you use `host` as your default project runner, Bolt CLI will run your project on your host machine. If you use `vm` as your default project runner, Bolt CLI will run your project on a VM.
-
-You can also override this configuration from CLI using `--host` & `--vm` flags in `bolt up` command. By default, Bolt CLI uses `host` as your default project runner.
-
-### default_service_runner
-
-This is the default service runner for your project. You can use `local` or `docker` as your default service runner. If you use `local` as your default service runner, Bolt CLI will run your services on your host machine. If you use `docker` as your default service runner, Bolt CLI will run your services on Docker.
-
-To run your services on Docker, you need to have Docker installed on your machine.
 
 ### services
 
