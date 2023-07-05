@@ -21,8 +21,6 @@ default_service_runner: <local | docker | vmlocal | vmdocker>
 supported_service_runners:
   - local
   - docker
-  - vmlocal
-  - vmdocker
 service-runners:
   local:
     envfile: <path/to/envfile>
@@ -85,9 +83,16 @@ Let's understand what the default service runner values are -
 
 ### supported_service_runners
 
-This is an array of strings. Each string contains a service runner name. You can use `local`, `docker`, `vmlocal` or `vmdocker` as your service runner name.
+This is an array of strings. Each string contains a service runner name. You can use `local` or `docker` as your service runner name.
 
-Supported Service Runners stands for the service runners that your service supports. For example, if you use `local` and `docker` as your supported service runners, your service will be able to run on your host machine's local and Docker.
+Supported Service Runners stands for the service runners that your service supports.
+
+For example,
+
+- If you use `local` and `docker` as your **supported_service_runners** & `local` as your **default_service_runner**, your service will be able to run on host machine's local as Process.
+- If you use `local` and `docker` as your **supported_service_runners** & `docker` as your **default_service_runner**, your service will be able to run on host machine's Docker.
+- If you use `local` and `docker` as your **supported_service_runners** & `vmlocal` as your **default_service_runner**, your service will be able to run on virtual machine's local as Process.
+- If you use `local` and `docker` as your **supported_service_runners** & `vmdocker` as your **default_service_runner**, your service will be able to run on virtual machine's Docker.
 
 ### service-runners
 
