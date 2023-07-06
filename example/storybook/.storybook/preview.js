@@ -26,7 +26,7 @@ export const parameters = {
         'Tutorials',
         [
           'Simple HTTP Server',
-          'Next Postgres PgAdmin',
+          'Next Postgres PGAdmin BoltIngress',
           'Expo App',
           'Laravel App',
           'Laravel Auth & MySQL',
