@@ -30,6 +30,7 @@ export const parameters = {
           'Expo App',
           'Laravel App',
           'Laravel Auth & MySQL',
+          'Expo & ExpressJS',
         ],
         'API Reference',
         [
