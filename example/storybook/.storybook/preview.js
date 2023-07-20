@@ -58,6 +58,8 @@ export const parameters = {
             'deploy:watch',
           ],
         ],
+        'More',
+        ['Roadmap'],
       ],
     },
   },
