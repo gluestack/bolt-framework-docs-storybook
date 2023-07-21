@@ -20,8 +20,6 @@ export const parameters = {
           'Installing the Global CLI',
           'Your First Bolt Project',
           'Add Bolt to Existing Project',
-          'ENV Management',
-          'Service Management',
         ],
         'Tutorials',
         [
@@ -32,13 +30,15 @@ export const parameters = {
           'Laravel Auth & MySQL',
           'Expo & ExpressJS',
         ],
-        'API Reference',
+        'References',
         [
           'bolt.yaml',
           'bolt.service.yaml',
           'bolt ingress',
           'boltignore',
-          'CLI Reference',
+          'ENV Management',
+          'Service Management',
+          'CLI References',
           [
             'project:list',
             'init',

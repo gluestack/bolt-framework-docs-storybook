@@ -1,0 +1,175 @@
+---
+title: ENV Management | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="References/ENV Management" />
+
+# ENV Management
+
+Welcome to the guide on managing environment variables with the bolt-framework!
+
+This document will walk you through the `env:generate` command and its usage within a project that consists of multiple microservices.
+
+By using this command, you can generate `.env` files from `.env.tpl` (environment template) files, allowing you to manage environment variables in a structured manner.
+
+## Introduction
+
+The `env:generate` command is a powerful tool that helps you manage environment variables in a project with multiple microservices.
+
+It enables you to generate `.env` files based on the content of `.env.tpl` files found in each microservice directory.
+
+Additionally, it facilitates exporting microservice-specific variables to the root, making it easy to reference these variables among different microservices.
+
+## Understanding Project Structure
+
+Before we delve into the `env:generate` command, let's understand the project structure it supports.
+
+In this setup —
+
+- Your project has a root directory representing the entire project, containing several microservice directories
+- Each microservice directory has its own `.env.tpl` file, defining environment variables specific to that microservice
+- The root directory also contains a `.env.tpl` file for project-wide variables applicable to the entire project
+
+Here's how the project structure looks —
+
+```bash
+project-a/
+  .env.tpl (project-wide variables)
+  service-a/
+    .env.tpl (variables specific to service-a)
+  service-b/
+    .env.tpl (variables specific to service-b)
+```
+
+## The env:generate command
+
+The `env:generate` command scans your project's structure, utilizing `bolt.yaml` files and linked services from `bolt.service.yaml` files' `envfile` variable.
+
+It identifies the `.env.tpl` files within each microservice directory and generates corresponding `.env` files for them.
+
+Additionally, it exports microservice-specific variables to the root, enabling easy referencing among microservices.
+
+### Generating .env files
+
+When you run the `env:generate` command, it performs the following actions:
+
+1. Scans the project structure using `bolt.yaml` and linked services from each service's `bolt.service.yaml` file
+2. Looks for `.env.tpl` files within each microservice directory
+3. Generates a `.env` file for each `.env.tpl` file found, located in the same directory
+4. Populates the generated `.env` files with variables and their respective values from the corresponding `.env.tpl` files
+
+### Microservice Variable Export
+
+The `env:generate` command exports microservice-specific variables to the root, making it easy to reference these variables among different microservices. The exported variables follow this format — `%<service_name_without_special_chars>_<variable_name>%`
+
+For example, if you have a variable named `MY_VAR` in `service-a`, it would be exported as `SERVICEA_MY_VAR` in the root. This allows other microservices to reference `SERVICEA_MY_VAR` to access the value of `my_var` from `service-a`.
+
+### Root .env.tpl File
+
+The root directory's `.env.tpl` file contains project-wide variables applicable to the entire project.
+
+> Important Note: Variables defined in this file are not prefixed with a service name since they are not specific to any particular microservice.
+
+## Usage Example
+
+Let's illustrate the usage of the `env:generate` command and variable referencing through an example:
+
+Assume the following variables are defined in the respective `.env.tpl` files:
+
+```env
+# File location: project-a/.env.tpl
+PROJECT_NAME="My Project"
+LOG_LEVEL="debug"
+```
+
+```env
+# File location: project-a/service-a/.env.tpl
+APP_KEY="SERIVICE A KEY"
+APP_PORT=9001
+```
+
+```env
+# File location: project-a/service-b/.env.tpl
+APP_KEY="SERVICE B KEY"
+APP_PORT=9002
+```
+
+After executing the `env:generate` command, the following files will be generated:
+
+```env
+# File location: project-a/.env
+PROJECT_NAME="My Project"
+LOG_LEVEL=debug
+SERVICEA_APP_KEY="SERVICE A KEY"
+SERVICEA_APP_PORT=9001
+SERVICEB_APP_KEY="SERVICE B KEY"
+SERVICEB_APP_PORT=9002
+```
+
+```env
+# File location: project-a/service-a/.env
+APP_KEY="SERIVICE A KEY"
+APP_PORT=9001
+```
+
+```env
+# File location: project-a/service-b/.env
+APP_KEY="SERVICE B KEY"
+APP_PORT=9002
+```
+
+### Using env variables across Microservices
+
+Each microservice can reference the variables using the `%<service_name>_<variable_name>%` syntax. For instance, in `service-a`, you can use `%SERVICEB_APP_PORT%` to access the value of `APP_PORT` defined in `service-b`.
+
+Let's consider a scenario where `SERVICEA` is an API Service, and `SERVICEB` is a Client App. We want to construct the API's base URL in the client app's env file.
+
+```env
+# File location: project-a/.env.tpl
+PROJECT_NAME="My Project"
+LOG_LEVEL=debug
+```
+
+```env
+# File location: project-a/service-a/.env.tpl
+APP_NAME="API Service"
+APP_PORT=9001
+```
+
+```env
+# File location: project-a/service-b/.env.tpl
+APP_NAME="Client App"
+APP_PORT=9002
+API_URL="http://localhost:%SERVICEA_APP_PORT%"
+```
+
+After executing the `env:generate` command, the following files will be generated:
+
+```env
+# File location: project-a/.env
+PROJECT_NAME="My Project"
+LOG_LEVEL=debug
+SERVICEA_APP_NAME="API Service"
+SERVICEA_APP_PORT=9001
+SERVICEB_APP_NAME="Client App"
+SERVICEB_APP_PORT=9002
+SERVICEB_API_URL="http://localhost:9001"
+```
+
+```env
+# File location: project-a/service-a/.env
+APP_NAME="API Service"
+APP_PORT=9001
+```
+
+```env
+# File location: project-a/service-b/.env
+APP_NAME="Client App"
+APP_PORT=9002
+API_URL="http://localhost:9001"
+```
+
+Now you have a clear understanding of how to use the `env:generate` command and manage environment variables across your microservices using bolt-framework.

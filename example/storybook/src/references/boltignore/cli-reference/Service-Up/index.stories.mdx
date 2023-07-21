@@ -1,0 +1,27 @@
+---
+title: service:up | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="References/CLI References/service:up" />
+
+# service:up
+
+This command helps you to run a service on docker or local platform.
+
+```bash
+$ bolt service:up --help
+Usage: bolt service:up [options] <service-name>
+
+Starts a service from "bolt.yaml" services
+
+Arguments:
+  service-name               service containing "bolt.service.yaml" file and
+                             present in "bolt.yaml" services
+Options:
+  -sr, --service-runner <service-runner>  service runner to run the service on
+                             (choices: "docker", "local")
+  -h, --help                 display help for command
+```

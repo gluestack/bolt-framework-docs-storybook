@@ -1,0 +1,140 @@
+---
+title: bolt ingress | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="References/bolt ingress" />
+
+# Defining Bolt Ingress Configuration
+
+Bolt Ingress is a configuration that defines how services running using bolt should be exposed to the outside world. It is a YAML Object that is placed in `bolt.yaml` file, and is named as `ingress`.
+
+`ingress` accepts array of objects containing `domain`, `port` and `options` in yaml format.
+
+```yaml
+ingress:
+  - domain: example.com
+    port: 8080
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        client_max_body_size: 50
+        proxy_http_version: 1.1
+        proxy_cache_bypass: $http_upgrade
+        proxy_set_header_upgrade: $http_upgrade
+        proxy_set_header_host: $host
+        proxy_set_header_connection: '"upgrade"'
+        proxy_set_header_x_real_ip: $remote_addr
+        proxy_set_header_x_forwarded_for: $proxy_add_x_forwarded_for
+        proxy_set_header_x_forwarded_proto: $scheme
+        proxy_pass: http://host.docker.internal:3000
+```
+
+## Definition
+
+### domain (required)
+
+`domain` is the domain name that you want to expose your service to. It can be a subdomain or a domain.
+
+### port (required)
+
+`port` is the port number that you want to expose your service to.
+
+### options (required)
+
+`options` is an array of objects that contains the configuration for the ingress. It accepts the following keys:
+
+#### location (required)
+
+`location` is the location that you want to expose your service to.
+
+#### rewrite_key (required)
+
+`rewrite_key` is the key that you want to rewrite.
+
+#### rewrite_value (required)
+
+`rewrite_value` is the value that you want to rewrite.
+
+#### proxy_pass (required)
+
+`proxy_pass` is the URL that you want to reverse proxy pass to.
+
+> Notes:
+> • If you're using Host Project Runner, you should use `http://host.docker.internal:PORT_NUMBER` as the value of `proxy_pass`.
+> • If you're using Host Project Runner on a Linux based operating system, you should use `http://localhost:PORT_NUMBER` as the value of `proxy_pass`.
+> • If you're using VM Project Runner, you should use `http://localhost:PORT_NUMBER` as the value of `proxy_pass`.
+
+#### client_max_body_size (optional)
+
+`client_max_body_size` is the maximum body size that you want to allow. It accepts number in megabyte & its default value is `50`.
+
+#### proxy_http_version (optional)
+
+`proxy_http_version` is the HTTP version that you want to use. It accepts `1.0` or `1.1` & its default value is `1.1`.
+
+#### proxy_cache_bypass (optional)
+
+`proxy_cache_bypass` is the cache bypass that you want to use. Its default value is `$http_upgrade`.
+
+#### proxy_set_header_upgrade (optional)
+
+`proxy_set_header_upgrade` is the upgrade header that you want to use. Its default value is `$http_upgrade`.
+
+#### proxy_set_header_host (optional)
+
+`proxy_set_header_host` is the host header that you want to use. Its default value is `$host`.
+
+#### proxy_set_header_connection (optional)
+
+`proxy_set_header_connection` is the connection header that you want to use. Its default value is `"upgrade"`.
+
+#### proxy_set_header_x_real_ip (optional)
+
+`proxy_set_header_x_real_ip` is the real IP header that you want to use. Its default value is `$remote_addr`.
+
+#### proxy_set_header_x_forwarded_for (optional)
+
+`proxy_set_header_x_forwarded_for` is the forwarded for header that you want to use. Its default value is `$proxy_add_x_forwarded_for`.
+
+#### proxy_set_header_x_forwarded_proto (optional)
+
+`proxy_set_header_x_forwarded_proto` is the forwarded proto header that you want to use. Its default value is `$scheme`.
+
+## Ways to set environment variables in Bolt Ingress
+
+Bolt Ingress allows you to use environment variables in the configuration using `${YOUR_VARIABLE_NAME}` syntax.
+
+Bolt Ingress picks up environment variables from project's root `.env` file which is generated from `.env.tpl` file. Learn more about environment management [here](/docs/references/env-management).
+
+You can use environment variables by using the following syntax —
+
+```yaml
+# File location: ./bolt.yaml
+envfile: .env.tpl
+project_id: '1689657879944'
+project_name: sample-project
+services:
+  one:
+    path: ./services/one
+  two:
+    path: ./services/two
+ingress:
+  - domain: one.local.gluestack.app
+    port: 8001
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://localhost:${ONE_APP_PORT}
+  - domain: two.local.gluestack.app
+    port: 8002
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://localhost:${TWO_APP_PORT}
+```
