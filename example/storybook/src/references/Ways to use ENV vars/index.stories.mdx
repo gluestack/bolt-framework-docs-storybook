@@ -1,0 +1,156 @@
+---
+title: Ways to use ENV vars | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="References/Ways to use ENV vars" />
+
+# Ways to use ENV variables
+
+In this section, we'll explain how to use environment variables from the `.env.tpl` file in both `bolt.yaml` and `bolt.service.yaml` files.
+
+Bolt keeps `.env.tpl` file in your project's root and against each of your bolt services. This is because, you can use environment variables in your `bolt.service.yaml` files and `bolt.yaml`'s `ingress` attribute.
+
+We'll cover two main aspects:
+
+- **Using Environment Variables in bolt.yaml for bolt Ingress Attributes**
+- **Using Environment Variables in bolt.service.yaml for bolt Service Configuration**
+
+## Using Environment Variables in bolt.yaml for Ingress Attributes
+
+The `bolt.yaml` file contains configuration for your project, services and ingress. In the ingress section, you can define domain-specific routes to forward incoming requests to the appropriate service. To make these configurations more dynamic and configurable, you can use environment variables from the `.env.tpl` file. Here's how:
+
+### Defining Environment Variables in .env.tpl
+
+In your project's root directory, you have a file named `.env.tpl`. This file serves as a template for defining environment variables that can be used in other configuration files. For the ingress attribute in `bolt.yaml`, you can define the environment variables like this:
+
+```plaintext
+# .env.tpl
+TODOONE_APP_PORT=8001
+TODOTWO_APP_PORT=8002
+```
+
+### Using Environment Variables in bolt.yaml
+
+In `bolt.yaml`, you have defined ingress configurations for two domains (`todo-one.local.gluestack.app` and `todo-two.local.gluestack.app`). You can use the previously defined environment variables for the `proxy_pass` attribute like this:
+
+```yaml
+# bolt.yaml
+envfile: .env.tpl
+project_id: '1689657879944'
+project_name: two-next-apps
+services:
+  todoone:
+    path: ./services/todo-one
+  todotwo:
+    path: ./services/todo-two
+ingress:
+  - domain: todo-one.local.gluestack.app
+    port: ${TODOONE_APP_PORT} # Use the environment variable here
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://localhost:${TODOONE_APP_PORT} # Use the environment variable here
+  - domain: todo-two.local.gluestack.app
+    port: ${TODOTWO_APP_PORT} # Use the environment variable here
+    options:
+      - location: /
+        rewrite_key: ^/(.*)
+        rewrite_value: /$1
+        proxy_pass: http://localhost:${TODOTWO_APP_PORT} # Use the environment variable here
+```
+
+By using `${SERVICENAME_VARIABLENAME}`, the values for `port` and `proxy_pass` attributes will be dynamically replaced with the values from the `.env.tpl` file. This allows you to change these values easily without modifying the `bolt.yaml` file directly.
+
+## Using Environment Variables in bolt.service.yaml for Service Configuration
+
+Each service in your project has its own `bolt.service.yaml` file, which contains configuration details specific to that service. You can also use environment variables from `.env.tpl` in these service-specific configuration files.
+
+### Defining Service-Specific Environment Variables in .env.tpl
+
+In the `.env.tpl` file, you can also define environment variables specific to each service. For example:
+
+#### For `todo-one`:
+
+```plaintext
+# services/todo-one/.env.tpl
+APP_PORT=4001
+LOCAL_BUILD_COMMAND="npm run dev"
+DOCKER_BUILD_FILEPATH=./run.Dockerfile
+```
+
+#### For `todo-two`:
+
+```plaintext
+# services/todo-two/.env.tpl
+APP_PORT=4002
+LOCAL_BUILD_COMMAND="npm run dev"
+DOCKER_BUILD_FILEPATH=./run.Dockerfile
+```
+
+### Using Environment Variables in bolt.service.yaml
+
+In the `bolt.service.yaml` files for `todo-one` and `todo-two` services, you can use the environment variables as follows:
+
+#### For `todo-one`:
+
+```yaml
+# services/todo-one/bolt.service.yaml
+container_name: todoone
+stateless: true
+default_service_runner: docker
+supported_service_runners:
+  - local
+  - docker
+service_runners:
+  local:
+    envfile: .env
+    build: npm install && npm run dev
+    ports:
+      - ${APP_PORT}:4001
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - ${APP_PORT}:4001
+    volumes:
+      - ./services/todo-one:/app/todo-one
+      - /app/todo-one/node_modules
+```
+
+#### For `todo-two`:
+
+```yaml
+# services/todo-two/bolt.service.yaml
+container_name: todotwo
+stateless: true
+default_service_runner: docker
+supported_service_runners:
+  - local
+  - docker
+service_runners:
+  local:
+    envfile: .env
+    build: ${LOCAL_BUILD_COMMAND} # Use the environment variable here
+    ports:
+      - ${APP_PORT}:4002
+  docker:
+    envfile: .env
+    build: ${DOCKER_BUILD_FILEPATH} # Use the environment variable here
+    ports:
+      - ${APP_PORT}:4002
+    volumes:
+      - ./services/todo-two:/app/todo-two
+      - /app/todo-two/node_modules
+```
+
+By using `${VARIABLE_NAME}`, the values for `build` and other attributes will be dynamically replaced with the values from the `.env.tpl` file specific to each service. This makes your service configurations more flexible and allows you to customize each service separately.
+
+In summary, using environment variables from the `.env.tpl` file in your `bolt.yaml` and `bolt.service.yaml` files allows you to keep your configurations separate from your code and makes it easier to manage different environments and settings for your project and services.
+
+We have put down a tutorial to help you get started and give you a basic example of how env management really works and how to use it in a project containing two services (ie. NextJS apps) using Bolt!
+
+> [Two Next Apps & Ways to use ENV variables in Bolt Services & Bolt Ingress](https://github.com/gluestack/bolt-framework-tutorial-apps/tree/main/examples/two-next-apps#two-next-apps--ways-to-use-env-variables-in-bolt-service--bolt-ingress)

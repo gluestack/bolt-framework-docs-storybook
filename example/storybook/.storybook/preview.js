@@ -37,6 +37,7 @@ export const parameters = {
           'bolt ingress',
           'boltignore',
           'ENV Management',
+          'Ways to use ENV vars',
           'Service Management',
           'CLI References',
           [
