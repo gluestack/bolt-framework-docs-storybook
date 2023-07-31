@@ -50,7 +50,7 @@ The project structure of our app is as follows:
 
 ```bash
 # Below's the directory structure of our project.
-bolt-todo/
+nest-expo-postgres-pgadmin/
 ╰─➤ services/
   ╰─➤ pgadmin/
     ╰─➤ bolt.service.yaml
@@ -74,7 +74,7 @@ bolt-todo/
 At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
 
 ```bash
-$ cd bolt-todo
+$ cd nest-expo-postgres-pgadmin
 $ bolt init
 ```
 
@@ -166,7 +166,7 @@ We have added ingress configuration for our project inside `bolt.yaml` file to a
 # This is how bolt.yaml file looks finally after adding ingress configuration
 envfile: .env.tpl
 project_id: '1689666445326'
-project_name: bolttodo
+project_name: nest-expo-postgres-pgadmin
 services:
   pgadmin:
     path: services/pgadmin
@@ -205,8 +205,6 @@ ingress:
         rewrite_key: ^/(.*)
         rewrite_value: /$1
         proxy_pass: http://host.docker.internal:19006
-vm:
-  name: bolttodo
 ```
 
 ## Running the Project
@@ -335,7 +333,7 @@ $ bolt service:list
 ╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
 ║ 2 │ pgadmin      │ up     │ docker         │ 8080 │ pgadmin     ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
-║ 3 │ todofe       │ up     │ local          │ NA   │ 91564       ║
+║ 3 │ todofe       │ up     │ local          │ NA   │ 28740       ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
 ║ 4 │ todobackend  │ up     │ docker         │ 3000 │ todobackend ║
 ╚═══╧══════════════╧════════╧════════════════╧══════╧═════════════╝
@@ -419,4 +417,4 @@ Error response from daemon: No such container: boltingress
 
 ## Repo Link
 
-To clone the project you can use [bolt-framework-tutorial-apps/examples/bolt-todo
+To clone the project you can use [bolt-framework-tutorial-apps/examples/nest-expo-postgres-pgadmin
