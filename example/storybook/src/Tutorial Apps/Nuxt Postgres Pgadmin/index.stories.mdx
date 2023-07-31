@@ -1,0 +1,223 @@
+---
+title: Nuxt Postgres Pgadmin | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Box, AppProvider, Link } from '@gluestack/design-system';
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Tutorials/Nuxt Postgres Pgadmin" />
+
+# Tutorial: Nuxt Postgres Pgadmin
+
+This tutorial is about how to run a Nuxt.js Postgress and PgAdmin in a project on Docker using bolt. Below's the video showing how to run this tutorial.
+
+<AppProvider>
+  <Box>
+    <video controls width="80%">
+      <source src="/assets/NuxtTodoBolt.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </Box>
+</AppProvider>
+
+## Table of Contents
+
+- Objectives
+- Project Structure
+- Initialising the project using Bolt
+- Adding all the services as Bolt service
+- Running the Project
+- Running the Project on Docker
+- Listing Bolt Services
+- Monitoring Service Logs
+- Stopping Your Project
+
+## Objectives
+
+Here we have created a project where we have three folder named `todo_nuxt`, `postgres` and `pgadmin` which has a nuxt app with postgres and pgadmin as services.
+
+Our Main objectives are:
+
+- Run this project using bolt in local machine.
+
+- Run this project using bolt in docker.
+
+## Project Structure
+
+```bash
+# Below's the directory structure of our project.
+todo_nuxt/
+╰─➤ services/
+  ╰─➤ pgadmin/...
+  ╰─➤ postgres/...
+  ╰─➤ todo_nuxt/...
+╰─➤ .boltignore
+╰─➤ .env
+╰─➤ .env.tpl
+╰─➤ bolt.yaml
+```
+
+## Initialising the project using Bolt
+
+At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
+
+```bash
+$ cd todo_nuxt
+$ bolt init
+```
+
+It has created a `bolt.yaml` file in our project's root directory.
+
+```yaml
+envfile: .env.tpl
+project_id: "1690172229386"
+project_name: todo_nuxt
+services: null
+ingress: null
+```
+
+## Adding all the services as Bolt service
+
+Now in order to add each and every services we have executed the following commands:
+
+```bash
+$ bolt service:add todonuxt todo_nuxt
+Creating app in todo_nuxt
+Scanning source code
+Detected NuxtJS app
+Installed todonuxt service in todo_nuxt
+Verifying metadata for other services..
+Metadata verified
+```
+
+```bash
+$ bolt service:add postgres postgres
+Creating app in postgres
+Scanning source code
+Detected Postgres app
+Installed postgres service in postgres
+Verifying metadata for other services..
+Metadata verified
+```
+
+```bash
+$ bolt service:add pgadmin pgadmin
+Creating app in pgadmin
+Scanning source code
+Detected an Unknown app
+Manually edit "bolt.service.yaml", "run.Dockerfile", "build.Dockerfile"
+Installed pgadmin service in pgadmin
+Verifying metadata for other services..
+Metadata verified
+```
+
+Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
+
+```yaml
+# This is how bolt.yaml file looks after executing the above commands
+envfile: .env.tpl
+project_id: "1690172229386"
+project_name: todo_nuxt
+services:
+  pgadmin:
+    path: ./services/pgadmin
+  todonuxt:
+    path: ./services/todo_nuxt
+  postgres:
+    path: ./services/postgres
+ingress: null
+```
+
+Each services has their own `bolt.service.yaml` file, here we have configured it as per our requirement.
+
+Also we have configured `run.dockerfile` and `build.dockerfile` for todonuxt, pgadmin and postgres to run them in docker.
+
+## Running the Project
+
+Now, let's run our services using Bolt.
+
+```bash
+# The following command will run the service as per the configuration in bolt.yaml file
+$ bolt up
+
+"todonuxt" service is up on docker platform
+```
+
+You can now access service at [http://localhost:3000](http://localhost:3000).
+
+## Running the Project on Docker
+
+Inorder to run the todonuxt service in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.service.yaml` file to `docker`.
+
+```yaml
+# This is how bolt.service.yaml file should look like if you want to run the service in docker
+container_name: todonuxt
+stateless: true
+default_service_runner: docker
+supported_service_runners:
+  - local
+  - docker
+service_runners:
+  local:
+    envfile: .env
+    build: npm run build && npm run start
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - 3000:3000
+```
+
+Now if you run `bolt up` command it will run the service in docker.
+
+## Listing Bolt Services
+
+You can also see the list of services in your bolt project and their statuses using the `service:list` command.
+
+```bash
+$ bolt service:list
+╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
+║ 1 │ pgadmin      │ up     │ docker         │ 8080 │ pgadmin   ║
+╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
+║ 2 │ postgres     │ up     │ docker         │ 5432 │ postgres  ║
+╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
+║ 3 │ todonuxt     │ up     │ docker         │ 3000 │ todonuxt  ║
+╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
+```
+
+## Monitoring Service Logs
+
+To monitor logs, use the following command:
+
+```bash
+$ bolt log SERVICE_NAME
+```
+
+To keep monitoring logs in live mode, use the following command:
+
+```bash
+$ bolt log --follow SERVICE_NAME
+```
+
+For example, if you want to monitor logs of `todonuxt` service, you can use the following command:
+
+```bash
+# To monitor logs at once
+$ bolt log todonuxt
+
+# To keep monitoring logs in live mode
+$ bolt log --follow todonuxt
+```
+
+## Stopping Your Project
+
+To stop your project, you can run the following command:
+
+```bash
+$ bolt down
+```
+
+This command will terminate all the services running via bolt in the project.
