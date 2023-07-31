@@ -328,17 +328,17 @@ You can also see the list of services in your bolt project and their statuses us
 
 ```bash
 $ bolt service:list
-╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 1 │ postgres     │ down   │ NA             │ NA   │ NA        ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 2 │ pgadmin      │ down   │ NA             │ NA   │ NA        ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 3 │ todofe       │ down   │ NA             │ NA   │ NA        ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 4 │ todobackend  │ down   │ NA             │ NA   │ NA        ║
-╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
+╔═══╤══════════════╤════════╤════════════════╤══════╤═════════════╗
+║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId   ║
+╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
+║ 1 │ postgres     │ up     │ docker         │ 5432 │ postgres    ║
+╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
+║ 2 │ pgadmin      │ up     │ docker         │ 8080 │ pgadmin     ║
+╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
+║ 3 │ todofe       │ up     │ local          │ NA   │ 91564       ║
+╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
+║ 4 │ todobackend  │ up     │ docker         │ 3000 │ todobackend ║
+╚═══╧══════════════╧════════╧════════════════╧══════╧═════════════╝
 ```
 
 ## Monitoring Service Logs
@@ -419,4 +419,4 @@ Error response from daemon: No such container: boltingress
 
 ## Repo Link
 
-To clone the project you can use [bolt-framework-tutorial-apps/examples/bolt-todo]
+To clone the project you can use [bolt-framework-tutorial-apps/examples/bolt-todo
