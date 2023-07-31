@@ -25,11 +25,13 @@ export const parameters = {
         [
           'Simple HTTP Server',
           'Next Postgres PGAdmin BoltIngress',
+          'Nest Expo Postgres Pgadmin',
           'Expo App',
           'Laravel App',
           'Laravel Auth & MySQL',
           'Expo & ExpressJS',
           'Next MoleculerJS Postgres PGAdmin',
+          'Nuxt Postgres Pgadmin',
         ],
         'References',
         [
