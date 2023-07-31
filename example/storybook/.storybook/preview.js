@@ -30,6 +30,7 @@ export const parameters = {
           'Laravel App',
           'Laravel Auth & MySQL',
           'Expo & ExpressJS',
+          'Next MoleculerJS Postgres PGAdmin',
           'Nuxt Postgres Pgadmin',
         ],
         'References',
