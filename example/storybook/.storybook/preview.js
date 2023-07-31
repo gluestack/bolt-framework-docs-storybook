@@ -29,7 +29,7 @@ export const parameters = {
           'Laravel App',
           'Laravel Auth & MySQL',
           'Expo & ExpressJS',
-          'Next Postgres PGAdmin Molecular BoltIngress',
+          'Next MoleculerJS Postgres PGAdmin',
         ],
         'References',
         [
