@@ -51,7 +51,7 @@ The project structure of our app is as follows:
 
 ```bash
 # Below's the directory structure of our project.
-frontend-backend-pgadmin-postgres/
+next-moleculerjs-postgres-pgadmin/
 ╰─➤ services/
   ╰─➤ backend
   ╰─➤ frontend
@@ -69,7 +69,7 @@ frontend-backend-pgadmin-postgres/
 At first we have initialised the project by running `bolt init` command to create `bolt.yaml` file.
 
 ```bash
-$ cd frontend-backend-pgadmin-postgres
+$ cd next-moleculerjs-postgres-pgadmin
 $ bolt init
 ```
 
@@ -78,7 +78,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 ```yaml
 envfile: .env.tpl
 project_id: '1690194385306'
-project_name: frontend-backend-pgadmin-postgres
+project_name: next-moleculerjs-postgres-pgadmin
 services: null
 ingress: null
 ```
@@ -133,7 +133,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 # This is how bolt.yaml file looks after executing the above commands
 envfile: .env.tpl
 project_id: '1690194385306'
-project_name: frontend-backend-pgadmin-postgres
+project_name: next-moleculerjs-postgres-pgadmin
 services:
   postgres:
     path: ./services/postgres
@@ -159,7 +159,7 @@ We have added ingress configuration for our project inside `bolt.yaml` file to a
 # This is how bolt.yaml file looks finally after adding ingress configuration
 envfile: .env.tpl
 project_id: '1690194385306'
-project_name: frontend-backend-pgadmin-postgres
+project_name: next-moleculerjs-postgres-pgadmin
 services:
   postgres:
     path: ./services/postgres
@@ -269,7 +269,7 @@ Inorder to run the service in docker when you run `bolt up` command you need to 
 # This is how bolt.yaml file should look like if you want to run the service in docker
 envfile: .env.tpl
 project_id: '1687868543060'
-project_name: frontend-backend-pgadmin-postgres
+project_name: next-moleculerjs-postgres-pgadmin
 services:
   myapp:
     path: service-one
@@ -356,3 +356,7 @@ $ bolt down
 ```
 
 This command will terminate all the services running via bolt in the project.
+
+## Repo Link
+
+To clone the project you can use [bolt-framework-tutorial-apps/examples/next-molecularjs-postgres-pgadmin](https://github.com/gluestack/bolt-framework-tutorial-apps/tree/main/examples/next-moleculerjs-postgres-pgadmin)
