@@ -40,8 +40,7 @@ This tutorial is about how to run a Molecular Postgres PgAdmin on Docker and Nex
 
 ## Objectives
 
-Here we have created a project where we have four folder named `frontend`, `backend`, `postgres` and `pgadmin` which has a next app with postgres
-, backend and pgadmin as services.
+Here we have created a project where we have four folder named `frontend`, `backend`, `postgres` and `pgadmin` which has a next app with postgres, backend and pgadmin as services.
 
 Our Main objectives are:
 
@@ -151,8 +150,7 @@ ingress: null
 
 Each services has their own `bolt.service.yaml` file, here we have configured it as per our requirement.
 
-We have configured `run.dockerfile` and `build.dockerfile` for **PGAdmin**, **Postgres** and **Backend** to run them in Docker. And
-**frontend** to run on Local.
+We have configured `run.dockerfile` and `build.dockerfile` for **PGAdmin**, **Postgres** and **Backend** to run them in Docker. And **frontend** to run on Local.
 
 ## Adding Ingress
 
@@ -205,9 +203,7 @@ Now, let's run our service using Bolt.
 $ bolt up
 ```
 
-Now this command will first run the services as per their configurations inside `bolt.service.yaml` for each each serivce. After
-that, bolt will create a nginx configuration file named as `bolt.nginx.conf` in your project's root directory and run the **Nginx
-server** on your host machine's **Docker**.
+Now this command will first run the services as per their configurations inside `bolt.service.yaml` for each each serivce. After that, bolt will create a nginx configuration file named as `bolt.nginx.conf` in your project's root directory and run the **Nginx server** on your host machine's **Docker**.
 
 ## Services that are running on docker
 
