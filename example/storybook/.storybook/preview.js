@@ -20,6 +20,7 @@ export const parameters = {
           'Installing the Global CLI',
           'Your First Bolt Project',
           'Add Bolt to Existing Project',
+          'Service Management',
         ],
         'Tutorials',
         [
@@ -33,15 +34,14 @@ export const parameters = {
           'Next MoleculerJS Postgres PGAdmin',
           'Nuxt Postgres Pgadmin',
         ],
+        'ENV',
+        ['Basics', 'Ways to use ENV vars'],
         'References',
         [
           'bolt.yaml',
           'bolt.service.yaml',
           'bolt ingress',
           'boltignore',
-          'ENV Management',
-          'Ways to use ENV vars',
-          'Service Management',
           'CLI References',
           [
             'project:list',
