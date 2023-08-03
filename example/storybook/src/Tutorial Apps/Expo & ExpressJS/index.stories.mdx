@@ -78,7 +78,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1687780932260'
+project_id: "1690963931562"
 project_name: expo-express-apis
 services: null
 ingress: null
@@ -111,7 +111,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding all our available services
 envfile: .env.tpl
-project_id: '1687780932260'
+project_id: "1690963931562"
 project_name: expo-express-apis
 services:
   expo:
@@ -126,28 +126,41 @@ ingress: null
 container_name: expo
 stateless: true
 default_service_runner: local
+service_discovery_offset: 
+  - 19000
+  - 19006
 supported_service_runners:
   - local
 service_runners:
   local:
     envfile: .env
     build: npm install && npm run web
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
+      - ${ASSIGNED_PORT_1}:${ASSIGNED_PORT_1}
 ```
 
 ```yaml
 # This is how service/bolt.service.yaml looks for apis
 container_name: apis
 stateless: true
-default_service_runner: vmlocal
+default_service_runner: local
+service_discovery_offset: 
+  - 3000
 supported_service_runners:
-  - vmlocal
   - local
+  - docker
 service_runners:
   local:
     envfile: .env
     build: npm install && npm run start
     ports:
-      - 3000:3000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
 ```
 
 ## Running the Project
@@ -161,7 +174,7 @@ $ bolt up
 ...
 
 "expo" service is up on local platform
-"apis" service is up on vmlocal platform
+"apis" service is up on local platform
 ```
 
 By default, the configuration in `bolt.yaml` file is to run the project on local machine.
@@ -171,22 +184,20 @@ You can now access:
 - expo service at [http://localhost:19006](http://localhost:19006)
 - apis service at [http://localhost:3000](http://localhost:3000)
 
-Running `bolt up` command make internal checks value defined against `default_service_runner` index in each service's `bolt.service.yaml` file.
-Now if you run `bolt up` command it will run the expo service on local & apis service on vmlocal.
-
 ## Listing Bolt Services
 
 You can also see the list of services in your bolt project and their statuses using the `service:list` command.
 
 ```bash
 $ bolt service:list
-╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 1 │ apis         │ down   │ NA             │ NA   │ NA        ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 2 │ expo         │ down   │ NA             │ NA   │ NA        ║
-╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
+╔═══╤══════════════╤════════╤════════════════╤═══════╤═══════════╗
+║ # │ Service Name │ Status │ Service Runner │ Port  │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼───────┼───────────╢
+║ 1 │ expo         │ up     │ local          │ 19000 │ 39418     ║
+║   │              │        │                │ 19006 │           ║
+╟───┼──────────────┼────────┼────────────────┼───────┼───────────╢
+║ 2 │ apis         │ up     │ local          │ 3000  │ 39420     ║
+╚═══╧══════════════╧════════╧════════════════╧═══════╧═══════════╝
 ```
 
 ## Monitoring Service Logs
@@ -221,7 +232,7 @@ $ bolt down
 ...
 
 "expo" is down from local platform
-"apis" is down from vmlocal platform
+"apis" is down from local platform
 ```
 
 ## Repo Link

@@ -73,15 +73,15 @@ At first we have initialised the project by running `bolt init` command to creat
 
 ```bash
 $ cd laravel-app
-$ bolt init --name laravel
+$ bolt init --name laravel-app
 ```
 
 It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1687940133023'
-project_name: laravel
+project_id: "1690964916850"
+project_name: laravel-app
 services: null
 ingress: null
 ```
@@ -91,7 +91,7 @@ ingress: null
 Now, in order to add service as a service in bolt we have executed the following command:
 
 ```bash
-$ bolt service:add myapp service/
+$ bolt service:add laravelservice service/
 Creating app in service
 Scanning source code
 Detected Laravel app
@@ -105,31 +105,35 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding service as a service
 envfile: .env.tpl
-project_id: '1687940133023'
-project_name: laravel
+project_id: "1690964916850"
+project_name: laravel-app
 services:
-  myapp:
+  laravelservice:
     path: service
 ingress: null
 ```
 
 ```yaml
 # This is how service/bolt.service.yaml looks
-container_name: myapp
+container_name: laravelservice
 stateless: true
 default_service_runner: local
+service_discovery_offset: 
+  - 9000
 supported_service_runners:
   - local
   - docker
 service_runners:
   local:
     envfile: .env
-    build: composer install && php artisan serve
+    build: composer install && php artisan serve --port=${ASSIGNED_PORT}
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 8000:8000
+      - ${ASSIGNED_PORT}:9000
 ```
 
 ## Running the Project
@@ -147,7 +151,7 @@ $ bolt up
 
 By default, the configuration in `bolt.yaml` file is to run the project on local machine.
 
-You can now access service at [http://localhost:8000](http://localhost:8000).
+You can now access service at [http://localhost:9000](http://localhost:9000).
 
 ## Running the Project on Docker
 
@@ -155,21 +159,25 @@ Inorder to run the service in docker when you run `bolt up` command you need to 
 
 ```yaml
 # This is how bolt.service.yaml file should look like if you want to run the service in docker
-container_name: myapp
+container_name: laravelservice
 stateless: true
 default_service_runner: docker
+service_discovery_offset: 
+  - 9000
 supported_service_runners:
   - local
   - docker
 service_runners:
   local:
     envfile: .env
-    build: composer install && php artisan serve
+    build: composer install && php artisan serve --port=${ASSIGNED_PORT}
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 8000:8000
+      - ${ASSIGNED_PORT}:9000
 ```
 
 Now if you run `bolt up` command it will run the service in docker.
@@ -180,21 +188,25 @@ Inorder to run the service in local when you run `bolt up` command you need to c
 
 ```yaml
 # This is how bolt.service.yaml file should look like if you want to run the service on local
-container_name: myapp
+container_name: laravelservice
 stateless: true
 default_service_runner: local
+service_discovery_offset: 
+  - 9000
 supported_service_runners:
   - local
   - docker
 service_runners:
   local:
     envfile: .env
-    build: composer install && php artisan serve
+    build: composer install && php artisan serve --port=${ASSIGNED_PORT}
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 8000:8000
+      - ${ASSIGNED_PORT}:9000
 ```
 
 Now if you run `bolt up` command it will run the service on local.
@@ -205,11 +217,11 @@ You can also see the list of services in your bolt project and their statuses us
 
 ```bash
 $ bolt service:list
-╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessID ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 1 │ myapp        │ up     │ local          │ NA   │ 13899     ║
-╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
+╔═══╤════════════════╤════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name   │ Status │ Service Runner │ Port │ ProcessId ║
+╟───┼────────────────┼────────┼────────────────┼──────┼───────────╢
+║ 1 │ laravelservice │ up     │ local          │ 9000 │ 23923     ║
+╚═══╧════════════════╧════════╧════════════════╧══════╧═══════════╝
 ```
 
 ## Monitoring Service Logs
