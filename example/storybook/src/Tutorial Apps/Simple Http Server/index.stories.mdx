@@ -14,7 +14,7 @@ This tutorial is about how to run a Simple HTTP Server using bolt. Below's the v
 
 <AppProvider>
   <Box>
-    <video controls width="80%">
+    <video controls width="100%">
       <source
         src="https://static.gluestack.io/assets/simple-http-server.mp4"
         type="video/mp4"
@@ -120,7 +120,7 @@ ingress: null
 container_name: myapp
 stateless: true
 default_service_runner: docker
-service_discovery_offset: 
+service_discovery_offset:
   - 9000
 supported_service_runners:
   - local

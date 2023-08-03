@@ -14,7 +14,7 @@ This tutorial is about how to run a Expo app on host machine's local environment
 
 <AppProvider>
   <Box>
-    <video controls width="80%">
+    <video controls width="100%">
       <source
         src="https://static.gluestack.io/assets/expo-express-apis.mp4"
         type="video/mp4"
@@ -126,7 +126,7 @@ ingress: null
 container_name: expo
 stateless: true
 default_service_runner: local
-service_discovery_offset: 
+service_discovery_offset:
   - 19000
   - 19006
 supported_service_runners:
@@ -145,7 +145,7 @@ service_runners:
 container_name: apis
 stateless: true
 default_service_runner: local
-service_discovery_offset: 
+service_discovery_offset:
   - 3000
 supported_service_runners:
   - local

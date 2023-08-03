@@ -14,7 +14,7 @@ This tutorial is about how to run a Nest Postgres PgAdmin on docker and Expo on 
 
 <AppProvider>
   <Box>
-    <video controls width="80%">
+    <video controls width="100%">
       <source
         src="https://static.gluestack.io/assets/nest-pgadmin-postgres.mp4"
         type="video/mp4"
@@ -234,7 +234,7 @@ stateless: true
 default_service_runner: docker
 depends_on:
   - postgres
-service_discovery_offset: 
+service_discovery_offset:
   - 8080
 supported_service_runners:
   - docker
@@ -250,7 +250,7 @@ service_runners:
 container_name: postgres
 stateless: false
 default_service_runner: docker
-service_discovery_offset: 
+service_discovery_offset:
   - 5432
 supported_service_runners:
   - docker
@@ -271,7 +271,7 @@ stateless: true
 default_service_runner: docker
 depends_on:
   - postgres
-service_discovery_offset: 
+service_discovery_offset:
   - 3000
 supported_service_runners:
   - local
@@ -296,7 +296,7 @@ stateless: true
 default_service_runner: local
 depends_on:
   - todobe
-service_discovery_offset: 
+service_discovery_offset:
   - 19000
   - 19006
 supported_service_runners:
