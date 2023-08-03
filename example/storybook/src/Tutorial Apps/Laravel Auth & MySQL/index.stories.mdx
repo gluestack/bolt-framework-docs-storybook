@@ -139,6 +139,7 @@ service_runners:
     ports:
       - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
 ```
+Also we have added `depends_on` key in `bolt.service.yaml` so that sql service will go up first.
 
 ## Adding MySQL service as a Bolt Service
 
