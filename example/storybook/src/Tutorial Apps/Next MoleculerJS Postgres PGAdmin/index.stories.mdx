@@ -29,7 +29,8 @@ This tutorial is about how to run a Molecular Postgres PgAdmin on Docker and Nex
 - Objectives
 - Project Structure
 - Initialising the project using Bolt
-- Adding service-one as a Bolt Service
+- Adding all services as a Bolt Service
+- Adding Ingress
 - Running the Project
 - Services that are running on Docker
 - Services that are running on Local
@@ -40,8 +41,7 @@ This tutorial is about how to run a Molecular Postgres PgAdmin on Docker and Nex
 
 ## Objectives
 
-Here we have created a project where we have four folder named `frontend`, `backend`, `postgres` and `pgadmin` which has a next app with postgres
-, backend and pgadmin as services.
+Here we have created a project where we have four folder named `frontend`, `backend`, `postgres` and `pgadmin` which has a next app with postgres, backend and pgadmin as services.
 
 Our Main objectives are:
 
@@ -80,7 +80,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1690194385306'
+project_id: "1690971331922"
 project_name: next-moleculerjs-postgres-pgadmin
 services: null
 ingress: null
@@ -91,7 +91,7 @@ ingress: null
 Now in order to add each and every services we have executed the following commands:
 
 ```bash
-$ bolt service:add backend backend
+$ bolt service:add backend services/backend
 Creating app in backend
 Scanning source code
 Detected NodeJS app
@@ -101,7 +101,7 @@ Metadata verified
 ```
 
 ```bash
-$ bolt service:add frontend frontend
+$ bolt service:add frontend services/frontend
 Creating app in frontend
 Scanning source code
 Detected NextJS app
@@ -111,7 +111,7 @@ Metadata verified
 ```
 
 ```bash
-$ bolt service:add postgres postgres
+$ bolt service:add postgres services/postgres
 Creating app in postgres
 Scanning source code
 Detected Postgres app
@@ -121,7 +121,7 @@ Metadata verified
 ```
 
 ```bash
-$ bolt service:add pgadmin pgadmin
+$ bolt service:add pgadmin services/pgadmin
 Creating app in pgadmin
 Scanning source code
 Detected pgadmin app
@@ -135,7 +135,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after executing the above commands
 envfile: .env.tpl
-project_id: '1690194385306'
+project_id: "1690971331922"
 project_name: next-moleculerjs-postgres-pgadmin
 services:
   postgres:
@@ -161,39 +161,42 @@ We have added ingress configuration for our project inside `bolt.yaml` file to a
 ```yaml
 # This is how bolt.yaml file looks finally after adding ingress configuration
 envfile: .env.tpl
-project_id: '1690194385306'
+project_id: "1690971331922"
 project_name: next-moleculerjs-postgres-pgadmin
 services:
-  postgres:
-    path: ./services/postgres
-  pgadmin:
-    path: ./services/pgadmin
   backend:
-    path: ./services/backend
+    path: services/backend
   frontend:
-    path: ./services/frontend
+    path: services/frontend
+  postgres:
+    path: services/postgres
+  pgadmin:
+    path: services/pgadmin
 ingress:
-  - domain: bolttodo.backend.app.com
+  - domain: bolt.frontend.app.com
     port: 8000
     options:
       - location: /
         rewrite_key: ^/(.*)
         rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:3000
-  - domain: bolt.pgadmin.app.com
+        proxy_pass: http://${FRONTEND_ASSIGNED_HOST}:${FRONTEND_ASSIGNED_PORT}
+  - domain: bolt.backend.app.com
     port: 8001
     options:
       - location: /
         rewrite_key: ^/(.*)
         rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:8080
-  - domain: bolt.postgres.app.com
+        proxy_pass: http://${BACKEND_ASSIGNED_HOST}:${BACKEND_ASSIGNED_PORT}
+  - domain: bolt.pgadmin.app.com
     port: 8002
     options:
       - location: /
         rewrite_key: ^/(.*)
         rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:5432
+        proxy_pass: http://${PGADMIN_ASSIGNED_HOST}:${PGADMIN_ASSIGNED_PORT}
+vm:
+  name: nextmoleculerjspostgrespgadmin
+
 ```
 
 ## Running the Project
@@ -218,31 +221,47 @@ Below's our `bolt.service.yaml` files for all three services configured to run o
 container_name: pgadmin
 stateless: true
 default_service_runner: docker
+service_discovery_offset: 
+  - 8080
 supported_service_runners:
+  - local
   - docker
-  - vmdocker
 service_runners:
+  local:
+    envfile: .env
+    build: npm run install --workspaces --if-present && npm run dev
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 8080:8080
+      - ${ASSIGNED_PORT}:8080
 ```
 
 ```yaml
 # This is bolt.service.yaml file for Postgres
 container_name: postgres
-stateless: true
+stateless: false
 default_service_runner: docker
+service_discovery_offset: 
+  - 5432
 supported_service_runners:
   - docker
-  - vmdocker
 service_runners:
   docker:
     envfile: .env
     build: ./run.Dockerfile
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - psql -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 10s
+      retries: 50
+      start_period: 30s
     ports:
-      - 5432:5432
+      - ${ASSIGNED_PORT}:5432
     volumes:
       - ./services/postgres/init.db/:/docker-entrypoint-initdb.d/
 ```
@@ -252,31 +271,22 @@ service_runners:
 container_name: backend
 stateless: true
 default_service_runner: docker
+service_discovery_offset: 
+  - 3000
 supported_service_runners:
   - local
   - docker
 service_runners:
   local:
     envfile: .env
-    build: npm run install && npm run dev
+    build: npm run install --workspaces --if-present && npm run dev
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 3000:3000
-```
-
-Inorder to run the service in docker when you run `bolt up` command you need to change the `default_service_runner` in `bolt.yaml` file to `docker`.
-
-```yaml
-# This is how bolt.yaml file should look like if you want to run the service in docker
-envfile: .env.tpl
-project_id: '1687868543060'
-project_name: next-moleculerjs-postgres-pgadmin
-services:
-  myapp:
-    path: service-one
-ingress: null
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
 ```
 
 ## Services that are running on local
@@ -288,18 +298,22 @@ Below's our `bolt.service.yaml` files for all three services configured to run o
 container_name: frontend
 stateless: true
 default_service_runner: local
+service_discovery_offset: 
+  - 3000
 supported_service_runners:
   - local
   - docker
 service_runners:
   local:
     envfile: .env
-    build: npm install && npm run dev
+    build: npm install && npm run dev -- --port ${ASSIGNED_PORT}
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 3001:3000
+      - ${ASSIGNED_PORT}:3000
     volumes:
       - :/app
       - /app/frontend/node_modules/
@@ -314,11 +328,11 @@ You can also see the list of services in your bolt project and their statuses us
 ```bash
 $ bolt service:list
 ╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessID ║
+║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
 ║ 1 │ backend      │ up     │ docker         │ 3000 │ backend   ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 2 │ fronend      │ up     │ local          │ NA   │ 83757     ║
+║ 2 │ frontend     │ up     │ local          │ 3001 │ 15560     ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
 ║ 3 │ postgres     │ up     │ docker         │ 5432 │ postgres  ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
