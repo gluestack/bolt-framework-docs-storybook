@@ -31,7 +31,7 @@ This will create a `bolt.yaml` file in your project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1687780932260'
+project_id: 'SOME_PROJECT_ID'
 project_name: YOUR_PROJECT_NAME
 services: null
 ingress: null
@@ -110,6 +110,8 @@ ingress: null
 container_name: serviceone
 stateless: true
 default_service_runner: local
+service_discovery_offset:
+  - 9000
 supported_service_runners:
   - local
   - docker
@@ -117,11 +119,13 @@ service_runners:
   local:
     envfile: .env
     build: npm install && node app.js
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 9000:9000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
     volumes:
       - service-one:/app
       - /app/node_modules
@@ -132,6 +136,8 @@ service_runners:
 container_name: servicetwo
 stateless: true
 default_service_runner: local
+service_discovery_offset:
+  - 9000
 supported_service_runners:
   - local
   - docker
@@ -139,17 +145,21 @@ service_runners:
   local:
     envfile: .env
     build: npm install && node app.js
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 9000:9000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
     volumes:
       - service-one:/app
       - /app/node_modules
 ```
 
-**Note:** Configure these files as per your need.
+> Note:
+> • Configure these files as per your need
+> • If you are defining port or host from ".env" variable in your project then use **ASSIGNED_PORT** and **ASSIGNED_HOST** as env variables, because bolt automatically assigns port and host to your service.
 
 ## Running Project via Bolt
 
@@ -191,13 +201,13 @@ If we run the above command for our example project, we will get the following o
 
 ```bash
 $ bolt service:list
-╔═══╤══════════════╤════════╤════════════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Project Runner │ Service Runner │ Port │ ProcessId ║
-╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
-║ 1 │ serviceone   │ up     │ host           │ local          │ NA   │ 6220      ║
-╟───┼──────────────┼────────┼────────────────┼────────────────┼──────┼───────────╢
-║ 2 │ servicetwo   │ up     │ host           │ local          │ NA   │ 6221      ║
-╚═══╧══════════════╧════════╧════════════════╧════════════════╧══════╧═══════════╝
+╔═══╤══════════════╤════════╤════════════════╤════════════════╤════════════╤═══════════╗
+║ # │ Service Name │ Status │ Project Runner │ Service Runner │ Port       │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼────────────┼───────────╢
+║ 1 │ serviceone   │ up     │ host           │ local          │ 9000       │ 6220      ║
+╟───┼──────────────┼────────┼────────────────┼────────────────┼────────────┼───────────╢
+║ 2 │ servicetwo   │ up     │ host           │ local          │ 9001       │ 6221      ║
+╚═══╧══════════════╧════════╧════════════════╧════════════════╧════════════╧═══════════╝
 ```
 
 ## Monitoring Service Logs
