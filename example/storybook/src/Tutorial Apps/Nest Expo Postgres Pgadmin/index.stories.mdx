@@ -309,6 +309,8 @@ service_runners:
       - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
       - ${ASSIGNED_PORT_1}:${ASSIGNED_PORT_1}
 ```
+We have introduced a `depends_on` key within the webui service, establishing a dependency on the todobe service. This ensures that our todofe will only be brought up once todobe is running.
+Given that both the todobe and pgadmin services rely on the postgres service, it follows that the pgadmin and todobe services will be initiated subsequent to the availability of the postgres service.
 
 ## Running the Project
 
