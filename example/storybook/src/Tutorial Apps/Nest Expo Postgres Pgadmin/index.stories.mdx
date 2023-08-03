@@ -16,7 +16,7 @@ This tutorial is about how to run a Nest Postgres PgAdmin on docker and Expo on 
   <Box>
     <video controls width="80%">
       <source
-        src="https://static.gluestack.io/assets/NestExpoPostgres.mp4"
+        src="https://static.gluestack.io/assets/nest-pgadmin-postgres.mp4"
         type="video/mp4"
       />
       Your browser does not support the video tag.
@@ -85,8 +85,8 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1689666445326'
-project_name: bolttodo
+project_id: "1690896394872"
+project_name: nest-expo-postgres-pgadmin
 services: null
 ingress: null
 ```
@@ -118,22 +118,22 @@ Metadata verified
 ```
 
 ```bash
-$ bolt service:add todofe services/TodoApp
-Creating app in services/TodoApp
+$ bolt service:add todofe services/todofe
+Creating app in services/todofe
 Scanning source code
 Detected Expo app
-Installed todofe service in services/TodoApp
+Installed todofe service in services/todofe
 Verifying metadata for other services..
 Metadata verified
 ```
 
 ```bash
-$ bolt service:add todobackend services/todo-backend
-Creating app in services/todo-backend
+$ bolt service:add todobackend services/todobe
+Creating app in services/todobe
 Scanning source code
 Detected an Unknown app
 Manually edit "bolt.service.yaml", "run.Dockerfile", "build.Dockerfile"
-Installed todobackend service in services/todo-backend
+Installed todobackend service in services/todobe
 Verifying metadata for other services..
 Metadata verified
 ```
@@ -143,17 +143,17 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding service as a service
 envfile: .env.tpl
-project_id: '1689666445326'
-project_name: bolttodo
+project_id: "1690896394872"
+project_name: nest-expo-postgres-pgadmin
 services:
+  todobe:
+    path: services/backend
   pgadmin:
     path: services/pgadmin
   postgres:
     path: services/postgres
   todofe:
-    path: services/TodoApp
-  todobackend:
-    path: services/todo-backend
+    path: services/webui
 ingress: null
 ```
 
@@ -168,17 +168,17 @@ We have added ingress configuration for our project inside `bolt.yaml` file to a
 ```yaml
 # This is how bolt.yaml file looks finally after adding ingress configuration
 envfile: .env.tpl
-project_id: '1689666445326'
+project_id: "1690896394872"
 project_name: nest-expo-postgres-pgadmin
 services:
+  todobe:
+    path: services/backend
   pgadmin:
     path: services/pgadmin
   postgres:
     path: services/postgres
   todofe:
-    path: services/TodoApp
-  todobackend:
-    path: services/todo-backend
+    path: services/webui
 ingress:
   - domain: bolttodo.local.gluestack.app
     port: 8000
@@ -186,28 +186,30 @@ ingress:
       - location: /
         rewrite_key: ^/(.*)
         rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:3000
+        proxy_pass: http://${TODOBE_ASSIGNED_HOST}:${TODOBE_ASSIGNED_PORT}
   - domain: bolttodo-pgadmin.local.gluestack.app
     port: 8001
     options:
       - location: /
         rewrite_key: ^/(.*)
         rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:8080
+        proxy_pass: http://${PGADMIN_ASSIGNED_HOST}:${PGADMIN_ASSIGNED_PORT}
   - domain: bolttodo-postgres.local.gluestack.app
     port: 8002
     options:
       - location: /
         rewrite_key: ^/(.*)
         rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:5432
+        proxy_pass: http://${POSTGRES_ASSIGNED_HOST}:${POSTGRES_ASSIGNED_PORT}
   - domain: bolt-expo.local.gluestack.app
     port: 8003
     options:
       - location: /
         rewrite_key: ^/(.*)
         rewrite_value: /$1
-        proxy_pass: http://host.docker.internal:19006
+        proxy_pass: http://${TODOFE_ASSIGNED_HOST}:${TODOFE_ASSIGNED_PORT_1}
+vm:
+  name: nestexpopostgrespgadmin
 ```
 
 ## Running the Project
@@ -230,39 +232,47 @@ Below's our `bolt.service.yaml` files for all four services configured to run on
 container_name: pgadmin
 stateless: true
 default_service_runner: docker
+depends_on:
+  - postgres
+service_discovery_offset: 
+  - 8080
 supported_service_runners:
   - docker
-  - vmdocker
 service_runners:
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 8080:8080
+      - ${ASSIGNED_PORT}:8080
 ```
 
 ```yaml
 container_name: postgres
-stateless: true
+stateless: false
 default_service_runner: docker
+service_discovery_offset: 
+  - 5432
 supported_service_runners:
   - docker
-  - vmdocker
 service_runners:
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 5432:5432
+      - ${ASSIGNED_PORT}:5432
     volumes:
       - ./services/postgres/init.db/:/docker-entrypoint-initdb.d/
 ```
 
 ```yaml
-# This is bolt.service.yaml file for todo-backend
-container_name: todobackend
+# This is bolt.service.yaml file for backend
+container_name: todobe
 stateless: true
 default_service_runner: docker
+depends_on:
+  - postgres
+service_discovery_offset: 
+  - 3000
 supported_service_runners:
   - local
   - docker
@@ -270,31 +280,37 @@ service_runners:
   local:
     envfile: .env
     build: npm install && npm run start:dev
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 3000:3000
+      - ${ASSIGNED_PORT}:3000
 ```
 
 ```yaml
-# This is bolt.service.yaml file for TodoApp
+# This is bolt.service.yaml file for webui
 container_name: todofe
 stateless: true
 default_service_runner: local
+depends_on:
+  - todobe
+service_discovery_offset: 
+  - 19000
+  - 19006
 supported_service_runners:
   - local
-  - docker
 service_runners:
   local:
     envfile: .env
     build: npm install && npm run web
-  docker:
-    envfile: .env
-    build: ./run.Dockerfile
     ports:
-      - 3000:3000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
+      - ${ASSIGNED_PORT_1}:${ASSIGNED_PORT_1}
 ```
+We have introduced a `depends_on` key within the webui service, establishing a dependency on the todobe service. This ensures that our todofe will only be brought up once todobe is running.
+Given that both the todobe and pgadmin services rely on the postgres service, it follows that the pgadmin and todobe services will be initiated subsequent to the availability of the postgres service.
 
 ## Running the Project
 
@@ -307,7 +323,7 @@ $ bolt up
 ...
 
 "todofe" service is up on local platform
-"todobackend" service is up on docker platform
+"todobe" service is up on docker platform
 "pgadmin" service is up on docker platform
 "postgres" service is up on docker platform
 ```
@@ -317,7 +333,7 @@ By default, the configuration in `bolt.yaml` file is to run the project on local
 You can now access:
 
 - todofe service at [http://localhost:19006](http://localhost:19006)
-- todobackend service at [http://localhost:3000](http://localhost:3000)
+- todobe service at [http://localhost:3000](http://localhost:3000)
 - pgadmin service at [http://localhost:8080](http://localhost:8080)
 
 Running `bolt up` command make internal checks value defined against `default_service_runner` index in each service's `bolt.service.yaml` file.
@@ -329,17 +345,18 @@ You can also see the list of services in your bolt project and their statuses us
 
 ```bash
 $ bolt service:list
-╔═══╤══════════════╤════════╤════════════════╤══════╤═════════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId   ║
-╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
-║ 1 │ postgres     │ up     │ docker         │ 5432 │ postgres    ║
-╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
-║ 2 │ pgadmin      │ up     │ docker         │ 8080 │ pgadmin     ║
-╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
-║ 3 │ todofe       │ up     │ local          │ NA   │ 28740       ║
-╟───┼──────────────┼────────┼────────────────┼──────┼─────────────╢
-║ 4 │ todobackend  │ up     │ docker         │ 3000 │ todobackend ║
-╚═══╧══════════════╧════════╧════════════════╧══════╧═════════════╝
+╔═══╤══════════════╤════════╤════════════════╤═══════╤═══════════╗
+║ # │ Service Name │ Status │ Service Runner │ Port  │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼───────┼───────────╢
+║ 1 │ todobe       │ up     │ docker         │ 3000  │ todobe    ║
+╟───┼──────────────┼────────┼────────────────┼───────┼───────────╢
+║ 2 │ pgadmin      │ up     │ docker         │ 8080  │ pgadmin   ║
+╟───┼──────────────┼────────┼────────────────┼───────┼───────────╢
+║ 3 │ postgres     │ up     │ docker         │ 5432  │ postgres  ║
+╟───┼──────────────┼────────┼────────────────┼───────┼───────────╢
+║ 4 │ todofe       │ up     │ local          │ 19000 │ 40167     ║
+║   │              │        │                │ 19006 │           ║
+╚═══╧══════════════╧════════╧════════════════╧═══════╧═══════════╝
 ```
 
 ## Monitoring Service Logs
@@ -349,8 +366,8 @@ To monitor logs, use the following commands:
 ```bash
 # For todofe Service
 $ bolt log todofe
-# For todobackend Service
-$ bolt log todobackend
+# For todobe Service
+$ bolt log todobe
 # For pgadmin Service
 $ bolt log pgadmin
 # For postgres Service
@@ -362,8 +379,8 @@ To keep monitoring logs in live mode, use the following command:
 ```bash
 # For todofe Service
 $ bolt log --follow todofe
-# For todobackend Service
-$ bolt log --follow todobackend
+# For todobe Service
+$ bolt log --follow todobe
 # For pgadmin Service
 $ bolt log --follow pgadmin
 # For postgres Service
@@ -401,13 +418,13 @@ pgadmin
 
 "pgadmin" is down from docker platform
 
-todobackend
+todobe
 >> Done with stopping Docker Container...
 >> Removing Docker Container...
-todobackend
+todobe
 >> Done with removing Docker Container...
 
-"todobackend" is down from docker platform
+"todobe" is down from docker platform
 
 >> Stopping Docker Container...
 boltingress

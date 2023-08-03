@@ -10,7 +10,19 @@ import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 # Tutorial: Expo App
 
-This tutorial is about how to run a Expo app using bolt.
+This tutorial is about how to run a Expo app using bolt. Below's the video showing how to run this tutorial.
+
+<AppProvider>
+  <Box>
+    <video controls width="80%">
+      <source
+        src="https://static.gluestack.io/assets/expo-app.mp4"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+  </Box>
+</AppProvider>
 
 ## Table of Contents
 
@@ -62,7 +74,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1687780932260'
+project_id: "1690962366769"
 project_name: expo-app
 services: null
 ingress: null
@@ -73,7 +85,7 @@ ingress: null
 Now, in order to add service as a service in bolt we have executed the following command:
 
 ```bash
-$ bolt service:add web .
+$ bolt service:add expoweb .
 Creating app in service
 Scanning source code
 Detected Node.js app
@@ -87,25 +99,31 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding service as a service
 envfile: .env.tpl
-project_id: '1687780932260'
+project_id: "1690962366769"
 project_name: expo-app
 services:
-  web:
-    path: .
+  expoweb:
+    path: services/expo-web
 ingress: null
 ```
 
 ```yaml
 # This is how service/bolt.service.yaml looks
-container_name: web
+container_name: expoweb
 stateless: true
 default_service_runner: local
+service_discovery_offset: 
+  - 19000
+  - 19006
 supported_service_runners:
   - local
 service_runners:
   local:
     envfile: .env
     build: npm install && npm run web
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
+      - ${ASSIGNED_PORT_1}:${ASSIGNED_PORT_1}
 ```
 
 ## Running the Project
@@ -118,7 +136,7 @@ $ bolt up
 
 ...
 
-"web" service is up on local platform
+"expoweb" service is up on local platform
 ```
 
 By default, the configuration in `bolt.yaml` file is to run the project on local machine.
@@ -131,24 +149,21 @@ Inorder to run the service in local when you run `bolt up` command you need to c
 
 ```yaml
 # This is how bolt.service.yaml file should look like if you want to run the service on local
-container_name: todonext
+container_name: expoweb
 stateless: true
 default_service_runner: local
+service_discovery_offset: 
+  - 19000
+  - 19006
 supported_service_runners:
   - local
-  - docker
 service_runners:
   local:
     envfile: .env
-    build: npm install && npm run dev
-  docker:
-    envfile: .env
-    build: ./run.Dockerfile
+    build: npm install && npm run web
     ports:
-      - 3000:3000
-    volumes:
-      - :/app
-      - /app/todo-next/node_modules/
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
+      - ${ASSIGNED_PORT_1}:${ASSIGNED_PORT_1}
 ```
 
 Now if you run `bolt up` command it will run the service on local.
@@ -159,11 +174,12 @@ You can also see the list of services in your bolt project and their statuses us
 
 ```bash
 $ bolt service:list
-╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessID ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 1 │ web          │ up     │ local          │ NA   │ 13899     ║
-╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
+╔═══╤══════════════╤════════╤════════════════╤═══════╤═══════════╗
+║ # │ Service Name │ Status │ Service Runner │ Port  │ ProcessId ║
+╟───┼──────────────┼────────┼────────────────┼───────┼───────────╢
+║ 1 │ expoweb      │ up     │ local          │ 19000 │ 39151     ║
+║   │              │        │                │ 19006 │           ║
+╚═══╧══════════════╧════════╧════════════════╧═══════╧═══════════╝
 ```
 
 ## Monitoring Service Logs
@@ -177,7 +193,7 @@ $ bolt log web
 To keep monitoring logs in live mode, use the following command:
 
 ```bash
-$ bolt log --follow web
+$ bolt log --follow expoweb
 ```
 
 ## Stopping Your Project
@@ -188,7 +204,7 @@ To stop your project, you can run the following command:
 $ bolt down
 >> Stopping expo-app...
 
-"web" is down from local platform
+"expoweb" is down from local platform
 
 >> expo-app is down.
 ```

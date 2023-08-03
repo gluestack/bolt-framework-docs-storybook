@@ -16,7 +16,7 @@ This tutorial is about how to run a Laravel app on our Local and MySQL on Docker
   <Box>
     <video controls width="80%">
       <source
-        src="https://static.gluestack.io/assets/LaravelAuthMySQL.mp4"
+        src="https://static.gluestack.io/assets/laravel-mysql.mp4"
         type="video/mp4"
       />
       Your browser does not support the video tag.
@@ -75,15 +75,15 @@ At first we have initialised the project by running `bolt init` command to creat
 
 ```bash
 $ cd laravel-auth-mysql
-$ bolt init --name laravelmysql
+$ bolt init
 ```
 
 It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1687940133023'
-project_name: laravelmysql
+project_id: "1690972020931"
+project_name: laravel-auth-mysql
 services: null
 ingress: null
 ```
@@ -93,7 +93,7 @@ ingress: null
 To add Laravel service, run the following command -
 
 ```bash
-$ bolt service:add laravel services/laravel
+$ bolt service:add laravelservice services/laravel
 Creating app in service
 Scanning source code
 Detected Laravel app
@@ -107,39 +107,46 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding laravel service
 envfile: .env.tpl
-project_id: '1687940133023'
-project_name: laravelmysql
+project_id: "1690972020931"
+project_name: laravel-auth-mysql
 services:
-  laravel:
+  laravelservice:
     path: services/laravel
 ingress: null
 ```
 
 ```yaml
 # This is how services/laravel/bolt.service.yaml looks
-container_name: laravel
+container_name: laravelservice
 stateless: true
 default_service_runner: local
+service_discovery_offset: 
+  - 8000
+depends_on:
+  - sql
 supported_service_runners:
   - local
   - docker
 service_runners:
   local:
     envfile: .env
-    build: composer install && php artisan serve
+    build: composer install && npm install && npm run build && php artisan serve --port ${ASSIGNED_PORT}
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 8000:8000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
 ```
+Also we have added `depends_on` key in `bolt.service.yaml` so that sql service will go up first.
 
 ## Adding MySQL service as a Bolt Service
 
 To add MySQL service, run the following command -
 
 ```bash
-$ bolt service:add mysql services/mysql
+$ bolt service:add sql services/mysql
 Creating app in service
 Scanning source code
 Detected MySQL app
@@ -151,24 +158,28 @@ Metadata verified
 Bolt `service:add` command runs and automatically detects the type of service you are using and creates a `bolt.service.yaml` template init & includes the same into your `bolt.yaml` file.
 
 ```yaml
-# This is how bolt.yaml file looks after adding mysql service
+# This is how bolt.yaml file looks after adding sql service
 envfile: .env.tpl
-project_id: '1687940133023'
-project_name: laravelmysql
+project_id: "1690972020931"
+project_name: laravel-auth-mysql
 services:
-  laravel:
+  laravelservice:
     path: services/laravel
-  mysql:
+  sql:
     path: services/mysql
 ingress: null
+vm:
+  name: laravelauthmysql
 ```
 
 ```yaml
 # This is how services/mysql/bolt.service.yaml looks
 # Note that volumes are not configured, we have added it manually to the service
-container_name: mysql
-stateless: false
+container_name: sql
+stateless: true
 default_service_runner: docker
+service_discovery_offset: 
+  - 3306
 supported_service_runners:
   - docker
 service_runners:
@@ -178,7 +189,7 @@ service_runners:
     volumes:
       - ./services/mysql/data:/var/lib/mysql
     ports:
-      - 3306:3306
+      - ${ASSIGNED_PORT}:3306
 ```
 
 ## Running the Project
@@ -189,8 +200,8 @@ Now, let's run the project using Bolt.
 # The following command will run the service as per the configuration in bolt.yaml file
 $ bolt up
 
-"laravel" service is up on local platform
-"mysql" service is up on docker platform
+"laravelservice" service is up on local platform
+"sql" service is up on docker platform
 ```
 
 You can now access service at [http://localhost:8000](http://localhost:8000).
@@ -208,15 +219,6 @@ $ php artisan migrate
 
 # Seed tables
 $ php artisan db:seed
-
-# Install npm dependencies
-$ npm install
-
-# Create app build
-$ npm run build
-
-# Or run app build in dev node
-$ npm run dev
 ```
 
 ## Listing Bolt Services
@@ -225,13 +227,13 @@ You can also see the list of services in your bolt project and their statuses us
 
 ```bash
 $ bolt service:list
-╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessID ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 1 │ laravel      │ up     │ local          │ NA   │ 17920     ║
-╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 2 │ mysql        │ up     │ docker         │ 3306 │ mysql     ║
-╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
+╔═══╤════════════════╤════════╤════════════════╤══════╤═══════════╗
+║ # │ Service Name   │ Status │ Service Runner │ Port │ ProcessId ║
+╟───┼────────────────┼────────┼────────────────┼──────┼───────────╢
+║ 1 │ laravelservice │ up     │ local          │ 8000 │ 42338     ║
+╟───┼────────────────┼────────┼────────────────┼──────┼───────────╢
+║ 2 │ sql            │ up     │ docker         │ 3306 │ sql       ║
+╚═══╧════════════════╧════════╧════════════════╧══════╧═══════════╝
 ```
 
 ## Monitoring Service Logs
@@ -239,13 +241,13 @@ $ bolt service:list
 To monitor logs, use the following command:
 
 ```bash
-$ bolt log laravel
+$ bolt log laravelservice
 ```
 
 To keep monitoring logs in live mode, use the following command:
 
 ```bash
-$ bolt log --follow laravel
+$ bolt log --follow laravelservice
 ```
 
 ## Stopping Your Project
@@ -257,8 +259,8 @@ $ bolt down
 
 ...
 
-"laravel" is down from local platform
-"mysql" is down from docker platform
+"laravelservice" is down from local platform
+"sql" is down from docker platform
 ```
 
 ## Repo Link

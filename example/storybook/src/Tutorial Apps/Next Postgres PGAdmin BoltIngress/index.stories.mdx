@@ -16,7 +16,7 @@ This tutorial is about how to run a Next.js Postgress and PgAdmin in a project u
   <Box>
     <video controls width="80%">
       <source
-        src="https://static.gluestack.io/assets/NextVMBoltIngress.mp4"
+        src="https://static.gluestack.io/assets/next-pgadmin-ingres.mp4"
         type="video/mp4"
       />
       Your browser does not support the video tag.
@@ -33,7 +33,6 @@ This tutorial is about how to run a Next.js Postgress and PgAdmin in a project u
 - Adding Ingress
 - Running the Project
 - Running the Project on Virtual Machine
-- Running the Project on Host Machine
 - Listing Bolt Services
 - Monitoring Service Logs
 - Stopping Your Project
@@ -77,7 +76,7 @@ It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1687779995699'
+project_id: "1690964884913"
 project_name: next-postgres-pgadmin
 services: null
 ingress: null
@@ -123,7 +122,7 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after executing the above commands
 envfile: .env.tpl
-project_id: '1687779995699'
+project_id: "1690964884913"
 project_name: next-postgres-pgadmin
 services:
   todonext:
@@ -137,7 +136,7 @@ ingress: null
 
 Each services has their own `bolt.service.yaml` file, here we have configured it as per our requirement.
 
-We have configured `run.dockerfile` and `build.dockerfile` for **PGAdmin** and **Postgres** to run them in VM's Docker. And **Next app** to run on VM's Local.
+Also we have configured `run.dockerfile` and `build.dockerfile` for todonuxt, pgadmin and postgres to run them in docker.
 
 ## Adding Ingress
 
@@ -146,7 +145,7 @@ We have added ingress configuration for our project inside `bolt.yaml` file to a
 ```yaml
 # This is how bolt.yaml file looks finally after adding ingress configuration
 envfile: .env.tpl
-project_id: '1687779995699'
+project_id: "1690964884913"
 project_name: next-postgres-pgadmin
 services:
   todonext:
@@ -183,7 +182,7 @@ $ bolt up
 
 Now this command will first run the services as per their configurations inside `bolt.service.yaml` for each service. After that, bolt will create a nginx configuration file named as `bolt.nginx.conf` in your project's root directory and run the **Nginx server** on your host machine's **Docker**.
 
-## Running the Project on Virtual Machine
+## Running the Project on Docker
 
 Below's our `bolt.service.yaml` files for all three services configured to run on virtual machine for your reference.
 
@@ -191,32 +190,48 @@ Below's our `bolt.service.yaml` files for all three services configured to run o
 # This is bolt.service.yaml file for PGAdmin
 container_name: pgadmin
 stateless: true
-default_service_runner: vmdocker
+default_service_runner: docker
+service_discovery_offset: 
+  - 8080
 supported_service_runners:
+  - local
   - docker
-  - vmdocker
 service_runners:
+  local:
+    envfile: .env
+    build: npm run install --workspaces --if-present && npm run dev
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 8080:8080
+      - ${ASSIGNED_PORT}:8080
 ```
 
 ```yaml
 # This is bolt.service.yaml file for Postgres
 container_name: postgres
-stateless: true
-default_service_runner: vmdocker
+stateless: false
+default_service_runner: docker
+service_discovery_offset: 
+  - 5432
 supported_service_runners:
   - docker
-  - vmdocker
 service_runners:
   docker:
     envfile: .env
     build: ./run.Dockerfile
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - psql -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 10s
+      retries: 50
+      start_period: 30s
     ports:
-      - 5432:5432
+      - ${ASSIGNED_PORT}:5432
     volumes:
       - ./postgres/init.db/:/docker-entrypoint-initdb.d/
 ```
@@ -225,39 +240,29 @@ service_runners:
 # This is bolt.service.yaml file for Todo Next App
 container_name: todonext
 stateless: true
-default_service_runner: vmlocal
+default_service_runner: local
+service_discovery_offset: 
+  - 3000
 supported_service_runners:
   - local
   - docker
-  - vmlocal
-  - vmdocker
 service_runners:
   local:
     envfile: .env
-    build: npm install && npm run dev
+    build: npm install && npm run dev -- --port ${ASSIGNED_PORT}
     ports:
-      - 3000:3000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 3000:3000
+      - ${ASSIGNED_PORT}:3000
     volumes:
       - :/app
       - /app/todo-next/node_modules/
 ```
 
-Now if you run `bolt up` command it will run the services in virtual machine's environment.
-
-## Running the Project on Host Machine
-
-Now since we have configured our **default_service_runner** as either **vmlocal** or **vmdocker** but you would like to run them on your host machine, you don't need to reconfigure your services' **bolt.service.yaml** files.
-
-You can do that by just running the following command from project's root directory -
-
-```bash
-$ bolt up --host
-```
+Now if you run `bolt up` command it will run the services in docker.
 
 ## Listing Bolt Services
 
@@ -266,13 +271,13 @@ You can also see the list of services in this project and their statuses using t
 ```bash
 $ bolt service:list
 ╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessID ║
+║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 1 │ todonext     │ up     │ vmlocal        │ 3000 │ NA        ║
+║ 1 │ todonext     │ up     │ local          │ 3000 │ 14516     ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 2 │ pgadmin      │ up     │ vmdocker       │ 8080 │ NA        ║
+║ 2 │ postgres     │ up     │ docker         │ 5432 │ postgres  ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 3 │ postgres     │ up     │ vmdocker       │ 5432 │ NA        ║
+║ 3 │ pgadmin      │ up     │ docker         │ 8080 │ pgadmin   ║
 ╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
 ```
 

@@ -10,7 +10,19 @@ import { Canvas, Meta, Story } from '@storybook/addon-docs';
 
 # Tutorial: Simple HTTP Server
 
-This tutorial is about how to run a Simple HTTP Server using bolt.
+This tutorial is about how to run a Simple HTTP Server using bolt. Below's the video showing how to run this tutorial.
+
+<AppProvider>
+  <Box>
+    <video controls width="80%">
+      <source
+        src="https://static.gluestack.io/assets/simple-http-server.mp4"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+  </Box>
+</AppProvider>
 
 ## Table of Contents
 
@@ -63,15 +75,15 @@ At first we have initialised the project by running `bolt init` command to creat
 
 ```bash
 $ cd simple-http-server
-$ bolt init -n simpleserver
+$ bolt init
 ```
 
 It has created a `bolt.yaml` file in our project's root directory.
 
 ```yaml
 envfile: .env.tpl
-project_id: '1687868543060'
-project_name: simpleserver
+project_id: "1690960686634"
+project_name: simple-http-server
 services: null
 ingress: null
 ```
@@ -95,8 +107,8 @@ Bolt `service:add` command runs and automatically detects the type of service yo
 ```yaml
 # This is how bolt.yaml file looks after adding service-one as a service
 envfile: .env.tpl
-project_id: '1687868543060'
-project_name: simpleserver
+project_id: "1690960686634"
+project_name: simple-http-server
 services:
   myapp:
     path: service-one
@@ -107,19 +119,23 @@ ingress: null
 # This is how service-one/bolt.service.yaml looks
 container_name: myapp
 stateless: true
-default_service_runner: local
+default_service_runner: docker
+service_discovery_offset: 
+  - 9000
 supported_service_runners:
   - local
   - docker
 service_runners:
   local:
     envfile: .env
-    build: npm install && npm run start
+    build: npm install && node app.js
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     ports:
-      - 3000:3000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
     volumes:
       - service-one:/app
       - /app/node_modules
@@ -140,7 +156,7 @@ $ bolt up
 
 By default, the configuration in `bolt.yaml` file is to run the project on local machine.
 
-You can now access service-one at [http://localhost:3000](http://localhost:3000).
+You can now access service-one at [http://localhost:9000](http://localhost:9000).
 
 ## Running the Project on Docker
 
@@ -149,8 +165,8 @@ Inorder to run the service in docker when you run `bolt up` command you need to 
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service in docker
 envfile: .env.tpl
-project_id: '1687868543060'
-project_name: simpleserver
+project_id: "1690960686634"
+project_name: simple-http-server
 services:
   myapp:
     path: service-one
@@ -166,8 +182,8 @@ Inorder to run the service in local when you run `bolt up` command you need to c
 ```yaml
 # This is how bolt.yaml file should look like if you want to run the service on local
 envfile: .env.tpl
-project_id: '1687868543060'
-project_name: simpleserver
+project_id: "1690960686634"
+project_name: simple-http-server
 services:
   myapp:
     path: service-one
@@ -183,9 +199,9 @@ You can also see the list of services in your bolt project and their statuses us
 ```bash
 $ bolt service:list
 ╔═══╤══════════════╤════════╤════════════════╤══════╤═══════════╗
-║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessID ║
+║ # │ Service Name │ Status │ Service Runner │ Port │ ProcessId ║
 ╟───┼──────────────┼────────┼────────────────┼──────┼───────────╢
-║ 1 │ myapp        │ up     │ local          │ NA   │ 13899     ║
+║ 1 │ myapp        │ up     │ docker         │ 9000 │ myapp     ║
 ╚═══╧══════════════╧════════╧════════════════╧══════╧═══════════╝
 ```
 
