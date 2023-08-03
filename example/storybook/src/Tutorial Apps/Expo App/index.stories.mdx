@@ -14,7 +14,7 @@ This tutorial is about how to run a Expo app using bolt. Below's the video showi
 
 <AppProvider>
   <Box>
-    <video controls width="80%">
+    <video controls width="100%">
       <source
         src="https://static.gluestack.io/assets/expo-app.mp4"
         type="video/mp4"
@@ -112,7 +112,7 @@ ingress: null
 container_name: expoweb
 stateless: true
 default_service_runner: local
-service_discovery_offset: 
+service_discovery_offset:
   - 19000
   - 19006
 supported_service_runners:
@@ -152,7 +152,7 @@ Inorder to run the service in local when you run `bolt up` command you need to c
 container_name: expoweb
 stateless: true
 default_service_runner: local
-service_discovery_offset: 
+service_discovery_offset:
   - 19000
   - 19006
 supported_service_runners:

@@ -14,7 +14,7 @@ This tutorial is about how to run a Next.js Postgress and PgAdmin in a project u
 
 <AppProvider>
   <Box>
-    <video controls width="80%">
+    <video controls width="100%">
       <source
         src="https://static.gluestack.io/assets/next-pgadmin-ingres.mp4"
         type="video/mp4"
@@ -191,7 +191,7 @@ Below's our `bolt.service.yaml` files for all three services configured to run o
 container_name: pgadmin
 stateless: true
 default_service_runner: docker
-service_discovery_offset: 
+service_discovery_offset:
   - 8080
 supported_service_runners:
   - local
@@ -214,7 +214,7 @@ service_runners:
 container_name: postgres
 stateless: false
 default_service_runner: docker
-service_discovery_offset: 
+service_discovery_offset:
   - 5432
 supported_service_runners:
   - docker
@@ -241,7 +241,7 @@ service_runners:
 container_name: todonext
 stateless: true
 default_service_runner: local
-service_discovery_offset: 
+service_discovery_offset:
   - 3000
 supported_service_runners:
   - local
