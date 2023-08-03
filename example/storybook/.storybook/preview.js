@@ -35,7 +35,7 @@ export const parameters = {
           'Nuxt Postgres Pgadmin',
         ],
         'ENV',
-        ['Basics', 'Ways to use ENV vars'],
+        ['Basics', 'Ways to use ENV vars', 'Assigned Host and Assigned Ports'],
         'References',
         [
           'bolt.yaml',
