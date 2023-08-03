@@ -1,0 +1,147 @@
+---
+title: Basics | bolt-framework
+description: Run Docker containers, child processes, or even encapsulate your entire project within a VM, all under one unified API.
+---
+
+import { Canvas, Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="ENV/Assigned Host and Assigned Ports" />
+
+# Assigned Host and Assigned Ports
+
+In this section, we'll cover how does Bolt manages the `host` and `ports` for your services and maintains them throughout the project.
+
+Bolt keeps `.env.tpl` file in your project's root and against each of your bolt services. This is because, you can use environment variables in your `bolt.service.yaml` files and `bolt.yaml`'s `ingress` attribute.
+
+We'll cover two main aspects:
+
+- **How does Bolt assign host to your services**
+- **How does Bolt assign ports to your services**
+
+## How does Bolt assign host to your services
+
+Bolt assigns a host to your services in the following way:
+
+- Whenever Bolt runs a service, it automatically inserts the key name ASSIGNED_HOST with the default host value of localhost into the .env.tpl file of that service.
+
+  For example suppose you have a service named `nextapp`, and you run it using `bolt service:up postgres -sr local`, or `bolt up` then Bolt will automatically insert the following line into the .env.tpl file of the `nextapp` service:
+
+  ```bash
+  ASSIGNED_HOST=localhost
+  ```
+
+- Now in order to access host variable in `.env.tpl` of one service say `postgres` to another service say `nextapp`, you can use the following syntax in .env.tpl file of `nextapp`:
+
+  ```bash
+  PGHOST=%POSTGRES_ASSIGNED_HOST%
+  ```
+
+  Here `%POSTGRES_ASSIGNED_HOST%` will automatically gets replaced in .env file of the `nextapp` as per following rules:
+
+  - If `nextapp` is running on `local or vmlocal` then `%POSTGRES_ASSIGNED_HOST%` will be replaced with `localhost`.
+  - If `nextapp` is running on `docker or vmdocker` then `%POSTGRES_ASSIGNED_HOST%`  will be replaced with `host.docker.internal` if your operating system is `macOS` or `windows` otherwise it will be replaced with `localhost`.
+
+  So overall result will be something like this:
+
+  ```bash
+  # If service1 is running on local or vmlocal
+  POSTGRESHOST=localhost
+
+  # OR
+
+  # If service1 is running on docker or vmdocker and current OS is macOS or windows
+  POSTGRESHOST=host.docker.internal
+
+  # OR
+
+  # If service1 is running on docker or vmdocker and current OS is any other platform
+  POSTGRESHOST=localhost
+  ```
+
+> **Note:** You can use `${SERVICE_NAME_ASSIGNED_HOST}` in your bolt.yaml file for ingress attributes like proxy_pass for defining hosts.
+
+## How does Bolt assign ports to your services
+
+Whenever we add a service using bolt, bolt inserts a key in `bolt.service.yaml` file named `service_discovery_offset`. This key is used to assign ports to your services.
+
+Bolt assigns ports to your services in the following way:
+
+- At first bolt picks up the first port from `service_discovery_offset` and checks if it is already in use or not. If it is already in use then bolt will increment the port value by 1 and will retry the same process upto 5 times until it finds a port which is not in use otherwise it will stop the process and will throw an error.
+
+- Once it gets a port to run the service it will insert the key named `ASSIGNED_PORT` with the port value into the .env.tpl file of that service.
+
+  For example suppose you have a service named `postgres` and assume this is how its `bolt.service.yaml` files looks like:
+
+  ```yaml
+  container_name: postgres
+  stateless: true
+  default_service_runner: docker
+  service_discovery_offset:
+    - 5432
+  supported_service_runners:
+    - docker
+  service_runners:
+    docker:
+      envfile: .env
+      build: ./run.Dockerfile
+      ports:
+        - ${ASSIGNED_PORT}:5432
+      volumes:
+        - ./services/postgres/init.db/:/docker-entrypoint-initdb.d/
+  ```
+
+  You can run it using `bolt service:up postgres -sr local`, or `bolt up` then Bolt will look for the free ports starting from `5432` and whatever port it will find free it will automatically insert that port's value into the .env.tpl file of the `postgres` service like this:
+
+  ```bash
+  # Here I am assuming that bolt found port 5432 is free to run the postgres service
+  ASSIGNED_PORT=5432
+  ```
+  Now this port will be used to expose the `postgres` service from docker to your system.
+
+- If a particular service requires more than one port to run, then you can add those ports in `service_discovery_offset` key in bolt.yaml file, for example `minio` requires two ports to run, first one is to run minio and second one is to run minio console, so its `bolt.service.yaml` file looks like this:
+
+  ```yaml
+  container_name: minio
+  stateless: true
+  default_service_runner: docker
+  service_discovery_offset:
+    - 9000
+    - 9001
+  supported_service_runners:
+    - docker
+  service_runners:
+    docker:
+      envfile: .env
+      build: ./run.Dockerfile
+      ports:
+        - ${ASSIGNED_PORT}:9000
+        - ${ASSIGNED_PORT_1}:9001
+      volumes:
+        - ./services/minio/data/:/data/
+  ```
+
+  Now when you run this service using `bolt service:up minio -sr docker`, or `bolt up` then Bolt will look for the free ports starting from `9000` and `9001` and whatever ports it will find free it will automatically insert those ports' values into the .env.tpl file of the `minio` service like this:
+
+  ```bash
+  # Here I am assuming that bolt found port 9000 and 9001 are free to run the minio service
+  ASSIGNED_PORT=9000
+  ASSIGNED_PORT_1=9001
+  ```
+
+  Now these ports will be used to expose the `minio` service from docker to your system.
+
+- Now in order to access port variable in `.env` of one service say `postgres` to another service say `nextapp`, you can use the following syntax in .env.tpl file of `nextapp`:
+
+  ```bash
+  PGPORT=%POSTGRES_ASSIGNED_PORT%
+  ```
+
+  Here `%POSTGRES_ASSIGNED_PORT%` will automatically gets replaced by the actual value of `POSTGRES_ASSIGNED_PORT`.
+
+  So if `postgres` service's assigned port is 5432 then `%POSTGRES_ASSIGNED_PORT%` will be replaced with 5432, so actual value in .env file will be something like this:
+
+  ```bash
+  PGPORT=5432
+  ```
+
+> **Note:** You can use `${SERVICE_NAME_ASSIGNED_PORT}` in your bolt.yaml file for ingress attributes like proxy_pass for defining ports.

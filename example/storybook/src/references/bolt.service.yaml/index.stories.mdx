@@ -18,6 +18,8 @@ Here's how a sample bolt service file looks like —
 container_name: <your container name>
 stateless: <true | false>
 default_service_runner: <local | docker | vmlocal | vmdocker>
+service_discovery_offset:
+  - PORT_NUMBER
 supported_service_runners:
   - local
   - docker
@@ -25,13 +27,15 @@ service-runners:
   local:
     envfile: <path/to/envfile>
     build: <your project's run command>
+    port:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: <path/to/envfile>
     build: <path/to/your/Dockerfile>
     volumes:
       - <your host machine's path>:<your project's path in docker>
     ports:
-      - <your host machine's port>:<your project's running port in docker>
+      - <ASSIGNED_PORT>:<your project's running port in docker or ASSIGNED_PORT>
 ```
 
 Here's how **bolt.service.yaml** file would look after running the service:add command —
@@ -40,6 +44,8 @@ Here's how **bolt.service.yaml** file would look after running the service:add c
 container_name: myapp
 stateless: true
 default_service_runner: local
+service_discovery_offset:
+  - 3000
 supported_service_runners:
   - local
   - docker
@@ -47,13 +53,15 @@ service-runners:
   local:
     envfile: .env
     build: npm install && npm start
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ./run.Dockerfile
     volumes:
       - .:/app
     ports:
-      - 3000:3000
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
 ```
 
 ## Definition
@@ -65,6 +73,47 @@ This is the name of your service container. For local service runner, this name 
 ### stateless
 
 > This is still in development and is coming soon...!
+
+### service_discovery_offset
+
+This is the offset of your service. For example, if your service runs on port 3000, you can define it here. Bolt CLI will automatically assign a port to your service by adding the offset to the port number and if it is already assigned, it will assign another port to your service.
+
+> Note:
+> • You can use more than one port number in the service_discovery_offset array if your service runs on multiple ports.
+> • You can use assigned ports from envs using `${ASSIGNED_PORT}` for the first port number and `${ASSIGNED_PORT_1>}` for the second port number and so on.
+
+### depends_on
+
+This key is used to define the dependencies of your service. For example, if your service depends on a database service, you can define it here.
+
+For example you have service named "nextapp" and it depends on a database service named "postgres". Here's how you can define it in your bolt.service.yaml file —
+
+```yaml
+container_name: nextapp
+stateless: true
+default_service_runner: local
+depends_on:
+  - postgres
+service_discovery_offset:
+  - 3000
+supported_service_runners:
+  - local
+  - docker
+service-runners:
+  local:
+    envfile: .env
+    build: npm install && npm start
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
+  docker:
+    envfile: .env
+    build: ./run.Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
+```
+> Note: This key is optional and is not required to be defined in your bolt.service.yaml file if your service does not depend on any other service.
 
 ### default_service_runner
 
@@ -107,7 +156,7 @@ local:
   envfile: <path/to/envfile>
   build: <your project's run command>
   ports:
-    - <your host machine's port>:<your project's running port in virtual machine's local>
+    - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
 ```
 
 This is how a docker service runner object looks like —
@@ -119,7 +168,7 @@ docker:
   volumes:
     - <your host machine's path>:<your project's path in docker>
   ports:
-    - <your host machine's port>:<your project's running port in docker>
+    - ${ASSIGNED_PORT}:<your project's running port in docker or ${ASSIGNED_PORT}>
 ```
 
 ### service-runners > local or docker > envfile
@@ -162,7 +211,7 @@ You can use environment variables by using the following syntax —
 
 ```env
 # File location: ./services/.env
-APP_PORT=4002
+ASSIGNED_PORT=4002
 LOCAL_BUILD_COMMAND="npm install && npm start"
 DOCKER_BUILD_FILEPATH="./run.Dockerfile"
 ```
@@ -172,6 +221,8 @@ DOCKER_BUILD_FILEPATH="./run.Dockerfile"
 container_name: servicename
 stateless: true
 default_service_runner: docker
+service_discovery_offset:
+  - 4002
 supported_service_runners:
   - local
   - docker
@@ -180,12 +231,12 @@ service_runners:
     envfile: .env
     build: ${LOCAL_BUILD_COMMAND}
     ports:
-      - ${APP_PORT}:4002
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
   docker:
     envfile: .env
     build: ${DOCKER_BUILD_FILEPATH}
     ports:
-      - ${APP_PORT}:4002
+      - ${ASSIGNED_PORT}:${ASSIGNED_PORT}
     volumes:
       - ./services/todo-two:/app/todo-two
       - /app/todo-two/node_modules
